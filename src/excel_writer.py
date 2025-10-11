@@ -70,12 +70,12 @@ class ExcelWriter:
             keywords_text = ", ".join(recommended_keywords)
             
             rows.append({
-                'URL': item.get('url', ''),
-                'Main Keyword': item.get('main_keyword', ''),
-                'Current Position': round(item.get('position', 0), 1),
-                'Current Impressions': item.get('impressions', 0),
-                'Improvement Suggestions': improvements_text,
-                'Recommended Additional Keywords': keywords_text
+                'آدرس صفحه': item.get('url', ''),
+                'کلیدواژه اصلی': item.get('main_keyword', ''),
+                'موقعیت فعلی': round(item.get('position', 0), 1),
+                'تعداد نمایش': item.get('impressions', 0),
+                'پیشنهادات بهبود': improvements_text,
+                'کلیدواژه‌های پیشنهادی': keywords_text
             })
         
         # Create DataFrame
@@ -130,15 +130,18 @@ class ExcelWriter:
         rows = []
         for cluster in clusters:
             row = {
-                'Suggested Article Title': cluster.get('suggested_title', ''),
-                'Predicted Impressions': int(cluster.get('avg_impressions', 0)),
-                'Main Keyword Cluster': ", ".join(cluster.get('keywords', [])[:5])
+                'عنوان پیشنهادی مقاله': cluster.get('article_title', cluster.get('suggested_title', '')),
+                'پیش‌بینی نمایش': int(cluster.get('avg_impressions', 0)),
+                'کلاستر کلیدواژه اصلی': ", ".join(cluster.get('keywords', [])[:5]),
+                'نوع محتوا': cluster.get('content_type', ''),
+                'هدف جستجو': cluster.get('search_intent', ''),
+                'تعداد کلمات پیشنهادی': cluster.get('recommended_word_count', 0)
             }
             
             # Add headings
             headings = cluster.get('h2_headings', [])
             for i in range(num_heading_cols):
-                col_name = f'H2 Heading {i+1}'
+                col_name = f'هدینگ H2 شماره {i+1}'
                 row[col_name] = headings[i] if i < len(headings) else ''
             
             rows.append(row)
@@ -151,7 +154,7 @@ class ExcelWriter:
         df.to_excel(output_path, index=False, engine='openpyxl')
         
         # Format Excel file
-        column_widths = [60, 18, 50] + [40] * num_heading_cols
+        column_widths = [60, 18, 50, 20, 20, 20] + [40] * num_heading_cols
         self._format_workbook(
             output_path,
             header_fill='70AD47',

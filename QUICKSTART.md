@@ -1,4 +1,4 @@
-# Quick Start Guide - SEO Content Optimizer v2.1
+# Quick Start Guide - SEO Content Optimizer v2.2
 
 Get started in 5 minutes with Persian-optimized AI! / شروع در ۵ دقیقه با AI بهینه‌شده برای فارسی!
 

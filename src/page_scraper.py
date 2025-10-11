@@ -13,7 +13,8 @@ from typing import List, Dict, Optional
 import logging
 from tqdm import tqdm
 import time
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
+import urllib.parse
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +49,40 @@ class PageScraper:
         
         logger.info(f"PageScraper initialized with output dir: {self.output_dir}")
     
+    def _decode_persian_url(self, url: str) -> str:
+        """
+        Decode Persian URLs properly to display readable Persian text.
+        
+        Args:
+            url: Encoded URL
+            
+        Returns:
+            Decoded URL with readable Persian text
+        """
+        try:
+            # Parse the URL
+            parsed = urlparse(url)
+            
+            # Decode the path component
+            decoded_path = unquote(parsed.path, encoding='utf-8')
+            
+            # Decode query parameters
+            if parsed.query:
+                decoded_query = unquote(parsed.query, encoding='utf-8')
+            else:
+                decoded_query = ''
+            
+            # Reconstruct the URL
+            decoded_url = f"{parsed.scheme}://{parsed.netloc}{decoded_path}"
+            if decoded_query:
+                decoded_url += f"?{decoded_query}"
+            
+            return decoded_url
+            
+        except Exception as e:
+            logger.warning(f"Error decoding URL {url}: {str(e)}")
+            return url  # Return original if decoding fails
+    
     def scrape_page(self, url: str, timeout: int = 10) -> Dict:
         """
         Scrape SEO data from a single page.
@@ -59,8 +94,12 @@ class PageScraper:
         Returns:
             Dictionary with scraped data
         """
+        # Decode Persian URLs properly
+        decoded_url = self._decode_persian_url(url)
+        
         result = {
-            'url': url,
+            'url': decoded_url,  # Store decoded URL
+            'original_url': url,  # Keep original for reference
             'status': 'pending',
             'title': '',
             'meta_description': '',
@@ -74,8 +113,8 @@ class PageScraper:
         }
         
         try:
-            # Send GET request
-            response = requests.get(url, headers=self.headers, timeout=timeout)
+            # Send GET request with decoded URL
+            response = requests.get(decoded_url, headers=self.headers, timeout=timeout)
             response.raise_for_status()
             
             # Parse HTML
@@ -120,22 +159,22 @@ class PageScraper:
                 result['twitter_description'] = twitter_desc['content'].strip()
             
             result['status'] = 'success'
-            logger.debug(f"Successfully scraped: {url}")
+            logger.debug(f"Successfully scraped: {decoded_url}")
             
         except requests.Timeout:
             result['status'] = 'timeout'
             result['error'] = f'Request timeout after {timeout}s'
-            logger.warning(f"Timeout scraping {url}")
+            logger.warning(f"Timeout scraping {decoded_url}")
             
         except requests.RequestException as e:
             result['status'] = 'error'
             result['error'] = str(e)[:200]
-            logger.warning(f"Error scraping {url}: {str(e)}")
+            logger.warning(f"Error scraping {decoded_url}: {str(e)}")
             
         except Exception as e:
             result['status'] = 'error'
             result['error'] = f'Parsing error: {str(e)}'[:200]
-            logger.error(f"Unexpected error scraping {url}: {str(e)}")
+            logger.error(f"Unexpected error scraping {decoded_url}: {str(e)}")
         
         return result
     

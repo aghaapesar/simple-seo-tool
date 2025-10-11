@@ -2,6 +2,64 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0] - 2024-10-11
+
+### 🎯 Persian Language Optimization (Enhanced)
+- **Complete Persian AI Prompts**: All AI prompts rewritten specifically for Persian content
+- **Persian Search Intent**: Focus on Iranian user behavior and search patterns  
+- **Farsi SEO Best Practices**: Optimized for Google's algorithms for Persian content
+- **Localized Output**: All suggestions and recommendations in Persian
+- **Persian URL Decoding**: Proper handling of Persian URLs in scraping mode
+- **Fully Persian Excel Output**: All column headers and content in Persian
+
+### 🔧 Technical Improvements
+- **URL Encoding Fix**: Added `_decode_persian_url()` method to properly display Persian URLs
+- **Enhanced AI Prompts**: Improved prompts for better Persian content suggestions
+- **Excel Localization**: All Excel column headers now in Persian
+- **Better Error Handling**: Improved error messages and logging
+
+### 📊 Output Improvements
+- **Persian Column Headers**: Excel files now have Persian column names
+- **Enhanced Content Suggestions**: More detailed and actionable suggestions
+- **Better Keyword Clustering**: Improved clustering for Persian keywords
+- **Comprehensive Analysis**: More detailed analysis for existing content
+
+### 🐛 Bug Fixes
+- Fixed Persian URL encoding issues in scraping mode
+- Improved AI response parsing for Persian content
+- Better handling of Persian characters in Excel output
+- Enhanced error messages for Persian users
+
+### 📚 Documentation Updates
+- Updated README.md for v2.2
+- Enhanced Persian documentation sections
+- Added troubleshooting for Persian-specific issues
+- Updated examples with Persian content
+
+### 🔄 Migration Notes
+- No breaking changes from v2.1
+- All existing configurations remain compatible
+- Enhanced Persian support is automatic
+- Excel output format improved but backward compatible
+
+### 📈 Performance
+- Faster Persian URL processing
+- Improved AI response times for Persian prompts
+- Better memory usage for large Persian datasets
+- Enhanced caching for Persian content analysis
+
+### 🎯 Use Cases Enhanced
+- **Persian E-commerce**: Better product content optimization
+- **Persian Blogs**: Improved article suggestions and structure
+- **Persian News Sites**: Enhanced content clustering and suggestions
+- **Persian Educational Sites**: Better learning content optimization
+
+### 🔒 Privacy & Security
+- No changes to data handling
+- All Persian content processed locally
+- Enhanced logging for Persian content debugging
+- Better error reporting for Persian-specific issues
+
 ---
 
 ## [2.1.0] - 2025-10-11
