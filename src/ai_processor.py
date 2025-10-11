@@ -237,16 +237,42 @@ class AIProcessor:
             result = json.loads(response)
             clusters = result.get('clusters', [])
             
-            logger.info(f"Created {len(clusters)} keyword clusters")
-            return clusters
+            # Validate and enhance clusters
+            enhanced_clusters = []
+            for cluster in clusters:
+                # Ensure required fields exist
+                enhanced_cluster = {
+                    'main_topic': cluster.get('main_topic', 'موضوع کلی'),
+                    'keywords': cluster.get('keywords', []),
+                    'article_title': cluster.get('article_title', ''),
+                    'suggested_title': cluster.get('article_title', ''),  # Fallback
+                    'meta_description': cluster.get('meta_description', ''),
+                    'h2_headings': cluster.get('h2_headings', []),
+                    'content_type': cluster.get('content_type', 'راهنما'),
+                    'search_intent': cluster.get('search_intent', 'اطلاعاتی'),
+                    'recommended_word_count': cluster.get('recommended_word_count', 1500),
+                    'target_audience': cluster.get('target_audience', 'مخاطبان ایرانی'),
+                    'content_focus': cluster.get('content_focus', 'تمرکز بر نیازهای کاربران فارسی‌زبان')
+                }
+                
+                # Ensure at least one keyword exists
+                if enhanced_cluster['keywords']:
+                    enhanced_clusters.append(enhanced_cluster)
+                else:
+                    logger.warning(f"Skipping cluster with no keywords: {enhanced_cluster['main_topic']}")
+            
+            logger.info(f"Created {len(enhanced_clusters)} valid keyword clusters")
+            return enhanced_clusters
             
         except json.JSONDecodeError as e:
             logger.error(f"Failed to parse AI response as JSON: {str(e)}")
             logger.error(f"Response was: {response[:500]}")
-            raise
+            # Return empty list instead of raising to avoid complete failure
+            return []
         except Exception as e:
             logger.error(f"Error clustering keywords: {str(e)}")
-            raise
+            # Return empty list instead of raising to avoid complete failure
+            return []
     
     def generate_content_improvements(
         self, 

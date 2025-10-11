@@ -208,15 +208,30 @@ class KeywordClusterer:
         valid_clusters = []
         
         for cluster in clusters:
-            # Validation criteria
-            has_title = bool(cluster.get('suggested_title'))
-            has_keywords = len(cluster.get('keywords', [])) >= 1  # At least 1 keyword
-            has_headings = len(cluster.get('h2_headings', [])) >= 2  # At least 2 headings
+            # Get cluster data with fallbacks for different field names
+            title = cluster.get('article_title') or cluster.get('suggested_title', '')
+            keywords = cluster.get('keywords', [])
+            headings = cluster.get('h2_headings', [])
+            main_topic = cluster.get('main_topic', 'Unknown')
             
-            if has_title and has_keywords and has_headings:
+            # Validation criteria (more flexible)
+            has_title = bool(title.strip())
+            has_keywords = len(keywords) >= 1  # At least 1 keyword
+            has_headings = len(headings) >= 1  # At least 1 heading (more flexible)
+            
+            if has_title and has_keywords:
+                # Add headings if missing
+                if not has_headings:
+                    cluster['h2_headings'] = [
+                        f"مقدمه {main_topic}",
+                        f"نحوه {main_topic}",
+                        f"مزایای {main_topic}",
+                        f"نتیجه‌گیری"
+                    ]
+                
                 valid_clusters.append(cluster)
             else:
-                logger.warning(f"Skipping invalid cluster: {cluster.get('main_topic', 'Unknown')}")
+                logger.warning(f"Skipping invalid cluster: {main_topic} - Title: {has_title}, Keywords: {len(keywords)}")
         
         logger.info(f"Validated {len(valid_clusters)} clusters out of {len(clusters)}")
         return valid_clusters

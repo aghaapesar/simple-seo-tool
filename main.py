@@ -55,7 +55,7 @@ def print_banner():
     print("\n" + "="*70)
     print("🚀 SEO CONTENT ANALYSIS & OPTIMIZATION TOOL")
     print("="*70)
-    print("Version: 2.1 | Persian AI + Knowledge Base")
+    print("Version: 2.2 | Enhanced Persian Language Support")
     print("="*70 + "\n")
 
 
