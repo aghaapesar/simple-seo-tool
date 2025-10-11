@@ -147,6 +147,9 @@ class SEOContentOptimizer:
         self.file_selector = FileSelector()
         self.page_scraper = PageScraper()
         
+        # Knowledge base will be initialized per project
+        self.knowledge_base = None
+        
         logger.info("✅ SEO Content Optimizer initialized successfully")
     
     def _load_config(self, config_path: str) -> Dict:
@@ -195,6 +198,20 @@ class SEOContentOptimizer:
         """
         print_banner()
         print("📊 MODE: Content Optimization & Analysis")
+        
+        # Get project name for knowledge base
+        project_name = get_project_name_interactive()
+        
+        # Initialize knowledge base for this project
+        self.knowledge_base = KnowledgeBase(project_name)
+        logger.info(f"🧠 Knowledge Base initialized for project: {project_name}")
+        
+        print(f"🧠 Knowledge Base: {project_name}")
+        
+        # Show knowledge base statistics
+        kb_stats = self.knowledge_base.get_statistics()
+        print(f"   📊 Previous content suggestions: {kb_stats['total_content_suggestions']}")
+        print(f"   📊 Previous keyword clusters: {kb_stats['total_keyword_clusters']}")
         
         try:
             # Step 1: Select Excel files
@@ -281,6 +298,21 @@ class SEOContentOptimizer:
                         })
                     
                     print(f"   ✅ Generated {len(improvements_data)} improvement suggestions")
+                    
+                    # Save improvements to knowledge base
+                    for improvement in improvements_data:
+                        self.knowledge_base.add_improvement_suggestion(
+                            url=improvement.get('url', ''),
+                            keywords=[improvement.get('main_keyword', '')],
+                            suggestions=improvement.get('ai_suggestions', {}),
+                            current_metrics={
+                                'position': improvement.get('position', 0),
+                                'impressions': improvement.get('impressions', 0)
+                            }
+                        )
+                        logger.info(f"💾 Saved improvement to KB: {improvement.get('url', 'Unknown')}")
+                    
+                    print(f"   💾 Saved {len(improvements_data)} improvements to Knowledge Base")
                 
                 # Process new content suggestions
                 if len(unmatched_queries) > 0:
@@ -301,7 +333,34 @@ class SEOContentOptimizer:
                     new_content_clusters = self.clusterer.validate_clusters(new_content_clusters)
                     new_content_clusters = self.clusterer.extract_top_clusters(new_content_clusters, top_n=50)
                     
+                    # Check for duplicates using knowledge base
+                    filtered_clusters = []
+                    for cluster in new_content_clusters:
+                        title = cluster.get('article_title', '')
+                        keywords = cluster.get('keywords', [])
+                        
+                        if not self.knowledge_base.is_duplicate_content(title, keywords):
+                            filtered_clusters.append(cluster)
+                        else:
+                            logger.info(f"🚫 Skipped duplicate cluster: {title}")
+                    
+                    new_content_clusters = filtered_clusters
+                    print(f"   🚫 Filtered {len(new_content_clusters)} unique clusters (removed duplicates)")
+                    
                     print(f"   ✅ Created {len(new_content_clusters)} new content suggestions")
+                    
+                    # Save clusters to knowledge base
+                    for cluster in new_content_clusters:
+                        self.knowledge_base.add_generated_content(
+                            title=cluster.get('article_title', ''),
+                            keywords=cluster.get('keywords', []),
+                            content_type=cluster.get('content_type', ''),
+                            predicted_impressions=cluster.get('recommended_word_count', 1000),
+                            cluster_info=cluster
+                        )
+                        logger.info(f"💾 Saved cluster to KB: {cluster.get('main_topic', 'Unknown')}")
+                    
+                    print(f"   💾 Saved {len(new_content_clusters)} clusters to Knowledge Base")
                 
                 # Step 7: Generate Excel reports
                 print(f"\n[7/7] Generating Excel reports...")
