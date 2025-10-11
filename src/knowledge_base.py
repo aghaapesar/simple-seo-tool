@@ -138,7 +138,7 @@ class KnowledgeBase:
         content_str = f"{title}_{'-'.join(sorted(keywords))}"
         return hashlib.md5(content_str.encode('utf-8')).hexdigest()
     
-    def is_duplicate_content(self, title: str, keywords: List[str], threshold: float = 0.8) -> bool:
+    def is_duplicate_content(self, title: str, keywords: List[str], threshold: float = 0.95) -> bool:
         """
         Check if similar content already exists in history.
         

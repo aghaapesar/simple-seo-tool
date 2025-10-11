@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.3] - 2024-10-11
+
+### 🔄 Smart Clustering & Fallback Strategy
+- **Intelligent Duplicate Detection**: Improved threshold system (default 0.95, adjustable to 0.85)
+- **Fallback Clustering**: Multiple retry strategies when all clusters are filtered as duplicates
+- **User-Guided Recovery**: Interactive options to adjust clustering parameters
+- **Test Mode Support**: Clustering now works properly in test mode with limited data
+- **Threshold Adjustment**: Option to lower duplicate detection threshold on demand
+
+### 🐛 Bug Fixes
+- Fixed issue where all clusters were being filtered as duplicates
+- Fixed empty output folder when clustering fails
+- Improved duplicate detection algorithm to be less aggressive
+- Added proper fallback when no unique clusters are found
+
+### 🎯 Clustering Improvements
+- Better duplicate detection with weighted similarity scoring
+- More lenient threshold for title similarity (0.8 weight vs 0.3 for keywords)
+- Interactive retry options for failed clustering attempts
+- Support for different AI parameters when retrying
+
+### 📊 User Experience
+- Clear error messages when clustering fails
+- Interactive recovery options instead of silent failures
+- Test mode properly limits clustering data
+- Better feedback on clustering success/failure
+
+---
+
 ## [2.2.0] - 2024-10-11
 
 ### 🎯 Persian Language Optimization (Enhanced)

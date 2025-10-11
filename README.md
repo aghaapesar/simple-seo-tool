@@ -1,4 +1,4 @@
-# SEO Content Analysis & Optimization Tool v2.2
+# SEO Content Analysis & Optimization Tool v2.2.3
 
 A powerful, interactive Python application optimized for **Persian/Farsi content** that helps you improve your website's SEO through:
 1. **Content Optimization**: Analyze Google Search Console data with Persian-aware AI
@@ -11,7 +11,7 @@ A powerful, interactive Python application optimized for **Persian/Farsi content
 
 ---
 
-## 🆕 What's New in v2.2
+## 🆕 What's New in v2.2.3
 
 ### Persian Language Optimization 🇮🇷 (Enhanced)
 - ✅ **Persian-Aware AI Prompts**: Specialized prompts for Farsi content analysis
@@ -20,6 +20,13 @@ A powerful, interactive Python application optimized for **Persian/Farsi content
 - ✅ **Content Structure**: H2/H3 headings optimized for Persian SEO
 - ✅ **Persian URL Decoding**: Proper handling of Persian URLs in scraping mode
 - ✅ **Fully Persian Excel Output**: All column headers and content in Persian
+
+### Smart Clustering & Fallback Strategy 🔄
+- ✅ **Intelligent Duplicate Detection**: Prevents repetitive content with adjustable thresholds
+- ✅ **Fallback Clustering**: Multiple retry strategies when clustering fails
+- ✅ **User-Guided Recovery**: Interactive options to adjust clustering parameters
+- ✅ **Test Mode Support**: Clustering works in test mode with limited data
+- ✅ **Threshold Adjustment**: Lower duplicate detection threshold on demand
 
 ### Knowledge Base System 🧠
 - ✅ **Project Memory**: Track content history for each project

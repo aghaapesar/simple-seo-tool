@@ -55,7 +55,7 @@ def print_banner():
     print("\n" + "="*70)
     print("🚀 SEO CONTENT ANALYSIS & OPTIMIZATION TOOL")
     print("="*70)
-    print("Version: 2.2 | Enhanced Persian Language Support")
+    print("Version: 2.2.3 | Smart Clustering & Fallback Strategy")
     print("="*70 + "\n")
 
 
@@ -316,6 +316,11 @@ class SEOContentOptimizer:
                 
                 # Process new content suggestions
                 if len(unmatched_queries) > 0:
+                    # Apply test mode limit for clustering
+                    if test_mode:
+                        unmatched_queries = unmatched_queries.head(10)
+                        print(f"🧪 TEST MODE: Limited clustering to {len(unmatched_queries)} keywords")
+                    
                     print(f"\n   🔄 Clustering {len(unmatched_queries)} keywords for new content...")
                     
                     new_content_keywords = unmatched_queries['Query'].tolist()
@@ -346,6 +351,59 @@ class SEOContentOptimizer:
                     
                     new_content_clusters = filtered_clusters
                     print(f"   🚫 Filtered {len(new_content_clusters)} unique clusters (removed duplicates)")
+                    
+                    # Check if we have any clusters left after filtering
+                    if len(new_content_clusters) == 0:
+                        print(f"\n⚠️  All clusters were filtered as duplicates!")
+                        print(f"   This might be because:")
+                        print(f"   - Similar content was already generated")
+                        print(f"   - Duplicate detection is too strict")
+                        
+                        # Ask user what to do
+                        if not test_mode:
+                            retry_choice = input(f"\n🔧 What would you like to do?\n"
+                                               f"   [1] Lower duplicate detection threshold (allow more similar content)\n"
+                                               f"   [2] Generate clusters with different parameters\n"
+                                               f"   [3] Skip clustering and continue\n"
+                                               f"   Your choice (1-3): ").strip()
+                            
+                            if retry_choice == "1":
+                                print(f"\n🔄 Retrying with lower duplicate threshold...")
+                                # Retry with lower threshold on original clusters
+                                filtered_clusters = []
+                                for cluster in new_content_clusters:
+                                    title = cluster.get('article_title', '')
+                                    keywords = cluster.get('keywords', [])
+                                    
+                                    if not self.knowledge_base.is_duplicate_content(title, keywords, threshold=0.85):
+                                        filtered_clusters.append(cluster)
+                                
+                                new_content_clusters = filtered_clusters
+                                print(f"   ✅ Retry successful: {len(new_content_clusters)} clusters")
+                                
+                            elif retry_choice == "2":
+                                print(f"\n🔄 Retrying clustering with different AI parameters...")
+                                # Retry clustering with different temperature
+                                original_temp = self.ai_processor.temperature
+                                self.ai_processor.temperature = 0.3  # Slightly more creative
+                                
+                                try:
+                                    ai_clusters_retry = self.ai_processor.cluster_keywords(new_content_keywords)
+                                    new_content_clusters_retry = self.clusterer.merge_clusters_with_metadata(
+                                        ai_clusters_retry, unmatched_queries
+                                    )
+                                    new_content_clusters_retry = self.clusterer.validate_clusters(new_content_clusters_retry)
+                                    new_content_clusters = new_content_clusters_retry[:50]
+                                    print(f"   ✅ Retry successful: {len(new_content_clusters)} clusters")
+                                finally:
+                                    self.ai_processor.temperature = original_temp
+                                    
+                            else:
+                                print(f"   ⏭️  Skipping clustering...")
+                                new_content_clusters = []
+                        else:
+                            print(f"   ⏭️  Test mode: Skipping clustering...")
+                            new_content_clusters = []
                     
                     print(f"   ✅ Created {len(new_content_clusters)} new content suggestions")
                     
