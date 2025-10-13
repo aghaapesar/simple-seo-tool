@@ -486,6 +486,11 @@ class InternalLinker:
         Returns:
             Modified HTML with link added
         """
+        # Check if this URL is already linked in this section
+        if url_item.url in section_html:
+            logger.debug(f"      ⚠️  URL already exists in section, skipping: {url_item.url}")
+            return section_html
+        
         # Extract text content
         text = re.sub(r'<[^>]+>', '', section_html)
         
@@ -498,9 +503,10 @@ class InternalLinker:
         # Create link
         link_html = f'<a href="{url_item.url}">{anchor_text}</a>'
         
-        # Replace first occurrence of anchor text
+        # Replace first occurrence of anchor text that's not already in a link
         # Use word boundaries to avoid partial matches
-        pattern = r'\b' + re.escape(anchor_text) + r'\b'
+        # Make sure we're not replacing text that's already inside an <a> tag
+        pattern = r'(?<!</?a[^>]*>)\b' + re.escape(anchor_text) + r'\b(?![^<]*</a>)'
         modified_html = re.sub(pattern, link_html, section_html, count=1, flags=re.IGNORECASE)
         
         return modified_html

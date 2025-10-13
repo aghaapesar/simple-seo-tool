@@ -260,17 +260,8 @@ class DocumentExporter:
             # Clean HTML content (remove document-level tags)
             clean_content = self._clean_html_for_editor(content_html)
             
-            # Build editor-ready HTML
-            html_output = f"""<!-- SEO Title -->
-<!-- {title} -->
-
-<!-- Meta Description -->
-<!-- {meta_description} -->
-
-<!-- Content Start -->
-{clean_content}
-<!-- Content End -->
-"""
+            # Build editor-ready HTML (without comments, clean content only)
+            html_output = clean_content
             
             # Save
             output_path = self.output_dir / f"{output_filename}.html"
