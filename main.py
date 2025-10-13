@@ -873,9 +873,8 @@ class SEOContentOptimizer:
             # Step 3: Setup internal linker
             print_section("Internal Linking Setup", "3/4")
             linker = InternalLinker(sitemap_urls)
-            linker.analyze_sitemap()
             
-            print(f"✅ Loaded {len(linker.urls)} URLs from sitemap")
+            print(f"\n✅ Loaded {len(linker.urls)} URLs from sitemap")
             stats = linker.get_statistics()
             print(f"📊 URL Statistics:")
             for url_type, count in stats['url_types'].items():
