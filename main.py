@@ -57,10 +57,17 @@ logger = logging.getLogger(__name__)
 
 def print_banner():
     """Display application banner."""
+    # Read version from VERSION file
+    try:
+        with open('VERSION', 'r') as f:
+            version = f.read().strip()
+    except FileNotFoundError:
+        version = "2.3.1"  # fallback
+    
     print("\n" + "="*70)
     print("🚀 SEO CONTENT ANALYSIS & OPTIMIZATION TOOL")
     print("="*70)
-    print("Version: 2.3.0 | Multi-Model AI + Content Generation + Internal Linking")
+    print(f"Version: {version} | Multi-Model AI + Content Generation + Internal Linking")
     print("="*70 + "\n")
 
 

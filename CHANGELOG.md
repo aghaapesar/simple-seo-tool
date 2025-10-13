@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.1] - 2024-10-13
+
+### 🔧 Bug Fixes & Improvements
+
+#### Internal Linking System Enhancement
+- **Improved Semantic Matching**: Enhanced algorithm for better content-to-URL relevance
+- **Persian Word Relationships**: Added semantic groups for Persian content (گل، بذر، کاشت، آبیاری، خاک، کود، باغچه)
+- **Better Phrase Matching**: Exact phrase matches now get 0.8 score (was lower)
+- **Partial Word Support**: Added support for partial keyword matches (0.2 score)
+- **URL Path Relevance**: URLs with matching terms in path get bonus points
+- **Lowered Threshold**: Reduced matching threshold from 0.3 to 0.15 for more links
+- **Debug Information**: Added detailed logging for link match scores and URLs
+
+#### Word Export Fix
+- **Fixed Missing Dependency**: Installed python-docx package (was causing ModuleNotFoundError)
+- **Word Document Creation**: Fixed Word export functionality that was completely broken
+- **Document Exporter**: Now fully functional for creating .docx files
+
+#### Version Management
+- **Dynamic Version Reading**: main.py now reads version from VERSION file automatically
+- **Version File Update**: Updated VERSION file to 2.3.1
+- **Banner Update**: Application banner now shows current version dynamically
+
+### Technical Details
+- Enhanced `_calculate_match_score()` method with better Persian language support
+- Added `_has_semantic_similarity()` method for context-aware linking
+- Improved debug logging throughout internal linking process
+- Fixed python-docx import error in DocumentExporter
+
+---
+
 ## [2.3.0] - 2024-10-12
 
 ### 🔧 Updates & Improvements (2024-10-13)
