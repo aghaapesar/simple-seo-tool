@@ -243,9 +243,19 @@ class InternalLinker:
         # Sort by score (best matches first)
         potential_links.sort(key=lambda x: x['score'], reverse=True)
         
+        # Remove duplicate URLs - keep only the first (highest score) occurrence of each URL
+        seen_urls = set()
+        unique_potential_links = []
+        for link in potential_links:
+            if link['url'].url not in seen_urls:
+                unique_potential_links.append(link)
+                seen_urls.add(link['url'].url)
+        
+        logger.debug(f"   Filtered {len(potential_links)} potential links to {len(unique_potential_links)} unique URLs")
+        
         # Select links with even distribution across content
         selected_links = self._select_links_with_even_distribution(
-            potential_links, max_links, len(sections)
+            unique_potential_links, max_links, len(sections)
         )
         
         # Second pass: add selected links
