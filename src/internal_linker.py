@@ -294,12 +294,75 @@ class InternalLinker:
         # Join sections
         result_html = '\n'.join(modified_sections)
         
+        # Final pass: Remove any duplicate URL links (keep only first occurrence)
+        result_html = self._remove_duplicate_url_links(result_html)
+        
         logger.info(f"   ✅ Added {links_added} internal links:")
         for link_type, count in link_distribution.items():
             if count > 0:
                 logger.info(f"      - {link_type}: {count}")
         
         return result_html
+    
+    def _remove_duplicate_url_links(self, html: str) -> str:
+        """
+        Remove duplicate URL links from HTML content.
+        Keeps only the first occurrence of each URL.
+        
+        Args:
+            html: HTML content with links
+            
+        Returns:
+            HTML with duplicate URL links removed
+        """
+        # Find all links in the content
+        link_pattern = r'<a\s+href="([^"]+)"[^>]*>([^<]+)</a>'
+        matches = list(re.finditer(link_pattern, html))
+        
+        if not matches:
+            return html
+        
+        # Track seen URLs and their positions
+        seen_urls = {}
+        links_to_remove = []
+        
+        for match in matches:
+            url = match.group(1)
+            anchor_text = match.group(2)
+            position = match.start()
+            
+            if url in seen_urls:
+                # This URL already exists, mark this occurrence for removal
+                links_to_remove.append({
+                    'start': match.start(),
+                    'end': match.end(),
+                    'anchor_text': anchor_text,
+                    'url': url,
+                    'full_match': match.group(0)
+                })
+                logger.debug(f"      ⚠️  Removing duplicate link: '{anchor_text}' -> {url}")
+            else:
+                # First occurrence of this URL
+                seen_urls[url] = {
+                    'anchor_text': anchor_text,
+                    'position': position
+                }
+        
+        # Remove duplicate links (from end to start to preserve positions)
+        if links_to_remove:
+            logger.info(f"   🔍 Removing {len(links_to_remove)} duplicate URL link(s)")
+            
+            # Sort by position (reverse order for safe removal)
+            links_to_remove.sort(key=lambda x: x['start'], reverse=True)
+            
+            result = html
+            for link in links_to_remove:
+                # Replace the <a> tag with just the anchor text
+                result = result[:link['start']] + link['anchor_text'] + result[link['end']:]
+        else:
+            result = html
+        
+        return result
     
     def _get_prioritized_urls(self) -> List[URLItem]:
         """
