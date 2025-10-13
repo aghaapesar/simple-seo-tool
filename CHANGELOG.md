@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.2] - 2024-10-13
+
+### 🔗 Advanced Internal Linking System
+
+#### Smart Product Name Linking
+- **2-3 Syllable Priority**: First 2-3 words of product names get highest priority for linking
+- **Product Name Recognition**: 50+ Persian product words with syllable-based matching
+- **Semantic Anchor Text**: Intelligent selection based on product relevance and context
+- **Example**: "بذر پیاز سفید گرانوله" → links "بذر پیاز" (not "سفید")
+
+#### Even Link Distribution
+- **Content-Wide Spacing**: Links distributed evenly across entire content, not clustered
+- **Two-Pass Algorithm**: First identifies all potential links, then selects for even distribution
+- **Target Spacing**: Calculates optimal spacing based on content length and link count
+- **Quality Preservation**: Maintains high-quality matches while ensuring even spread
+
+#### Enhanced Word Export
+- **Better Error Handling**: Added detailed logging for Word export process
+- **Progress Feedback**: Real-time status updates during document creation
+- **Exception Recovery**: Graceful handling of export failures with clear error messages
+
+### Technical Improvements
+- Enhanced `_find_best_anchor_text()` with product name prioritization
+- Added `_find_semantic_anchor_text()` for 2-3 syllable product word matching
+- Implemented `_select_links_with_even_distribution()` for optimal link placement
+- Improved Persian product word database with syllable classification
+
+---
+
 ## [2.3.1] - 2024-10-13
 
 ### 🔧 Bug Fixes & Improvements

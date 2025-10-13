@@ -728,6 +728,7 @@ class SEOContentOptimizer:
                     
                     # Export to Word
                     try:
+                        print(f"  📝 Creating Word file for article {i}...")
                         word_file = exporter.export_content_to_word(
                             title=article['seo_title'],
                             meta_description=article['meta_description'],
@@ -735,7 +736,9 @@ class SEOContentOptimizer:
                             output_filename=filename
                         )
                         word_files.append(word_file)
+                        print(f"  ✅ Word file created: {Path(word_file).name}")
                     except Exception as e:
+                        print(f"  ❌ Word export failed for article {i}: {e}")
                         logger.error(f"Word export failed for article {i}: {e}")
                     
                     # Export to HTML

@@ -213,42 +213,67 @@ class InternalLinker:
         links_added = 0
         link_distribution = {'category': 0, 'product': 0, 'blog': 0, 'other': 0}
         
-        # Add links to sections
+        # Add links to sections with even distribution
         modified_sections = []
         
-        for section in sections:
+        # First pass: identify all potential link locations
+        potential_links = []
+        for i, section in enumerate(sections):
+            if section['type'] == 'heading':
+                continue  # Skip headings
+            
+            # Find best match for this section
+            best_url = self._find_best_url_for_section(
+                section['content'],
+                priority_urls,
+                link_distribution,
+                max_links - len(potential_links)
+            )
+            
+            if best_url:
+                match_score = self._calculate_match_score(section['content'].lower(), best_url)
+                potential_links.append({
+                    'section_index': i,
+                    'url': best_url,
+                    'score': match_score,
+                    'content': section['content']
+                })
+        
+        # Sort by score (best matches first)
+        potential_links.sort(key=lambda x: x['score'], reverse=True)
+        
+        # Select links with even distribution across content
+        selected_links = self._select_links_with_even_distribution(
+            potential_links, max_links, len(sections)
+        )
+        
+        # Second pass: add selected links
+        link_indices = {link['section_index'] for link in selected_links}
+        
+        for i, section in enumerate(sections):
             if section['type'] == 'heading':
                 # Never add links to headings
                 modified_sections.append(section['content'])
                 continue
             
-            # Try to add link to this section if we haven't reached max
-            if links_added < max_links:
-                # Find best match for this section
-                best_url = self._find_best_url_for_section(
+            if i in link_indices:
+                # This section was selected for linking
+                selected_link = next(link for link in selected_links if link['section_index'] == i)
+                
+                # Add link
+                modified_content = self._add_link_to_section(
                     section['content'],
-                    priority_urls,
-                    link_distribution,
-                    max_links - links_added
+                    selected_link['url']
                 )
                 
-                if best_url:
-                    # Add link
-                    modified_content = self._add_link_to_section(
-                        section['content'],
-                        best_url
-                    )
-                    
-                    if modified_content != section['content']:
-                        # Link was added
-                        modified_sections.append(modified_content)
-                        links_added += 1
-                        link_distribution[best_url.url_type] += 1
-                        logger.info(f"      ✓ Added {best_url.url_type} link: {best_url.title[:40]}")
-                        logger.debug(f"         URL: {best_url.url}")
-                        logger.debug(f"         Match score: {self._calculate_match_score(section['content'].lower(), best_url):.2f}")
-                    else:
-                        modified_sections.append(section['content'])
+                if modified_content != section['content']:
+                    # Link was added
+                    modified_sections.append(modified_content)
+                    links_added += 1
+                    link_distribution[selected_link['url'].url_type] += 1
+                    logger.info(f"      ✓ Added {selected_link['url'].url_type} link: {selected_link['url'].title[:40]}")
+                    logger.debug(f"         URL: {selected_link['url'].url}")
+                    logger.debug(f"         Match score: {selected_link['score']:.2f}")
                 else:
                     modified_sections.append(section['content'])
             else:
@@ -485,7 +510,7 @@ class InternalLinker:
         max_syllables: int = 5
     ) -> Optional[str]:
         """
-        Find best anchor text in the text for this URL.
+        Find best anchor text with priority for product names (2-3 syllable words).
         
         Args:
             text: Text content
@@ -502,18 +527,43 @@ class InternalLinker:
             if match:
                 return match.group(0)
         
-        # Try keywords
-        for keyword in url_item.keywords:
-            if len(keyword) > 2 and keyword.lower() in text.lower():
+        # Priority: Product names (first 2-3 words, 2-3 syllables)
+        title_words = url_item.title.split()
+        text_lower = text.lower()
+        
+        # Try 2-3 syllable phrases first (product names)
+        for word_count in [2, 3]:  # First 2-3 words are usually product name
+            if len(title_words) >= word_count:
+                phrase = ' '.join(title_words[:word_count])
+                if phrase in text_lower:
+                    match = re.search(re.escape(phrase), text, re.IGNORECASE)
+                    if match:
+                        return match.group(0)
+        
+        # Try semantic matches (2-3 syllable product words)
+        best_semantic = self._find_semantic_anchor_text(text, title_words)
+        if best_semantic:
+            return best_semantic
+        
+        # Try keywords (prioritize longer ones)
+        sorted_keywords = sorted(url_item.keywords, key=len, reverse=True)
+        for keyword in sorted_keywords:
+            if len(keyword) > 2 and keyword.lower() in text_lower:
                 match = re.search(re.escape(keyword), text, re.IGNORECASE)
                 if match:
                     return match.group(0)
         
-        # Try fuzzy matching with title words
-        title_words = url_item.title.split()
-        text_words = text.split()
+        # Try 4-5 words if 2-3 didn't work
+        for word_count in [4, 5]:
+            if len(title_words) >= word_count:
+                phrase = ' '.join(title_words[:word_count])
+                if phrase in text_lower:
+                    match = re.search(re.escape(phrase), text, re.IGNORECASE)
+                    if match:
+                        return match.group(0)
         
-        # Find closest matching phrase (up to 5 words)
+        # Fallback: fuzzy matching with title words
+        text_words = text.split()
         best_match = None
         best_ratio = 0.0
         
@@ -527,8 +577,107 @@ class InternalLinker:
                 if ratio > best_ratio and ratio > 0.6:
                     best_ratio = ratio
                     best_match = phrase
+    
+    def _find_semantic_anchor_text(self, text: str, title_words: list) -> Optional[str]:
+        """
+        Find semantic anchor text based on 2-3 syllable product words.
         
-        return best_match
+        Args:
+            text: Text content
+            title_words: Title words
+            
+        Returns:
+            Best semantic anchor text or None
+        """
+        # Persian 2-3 syllable words that are likely product names
+        product_words = {
+            # 2 syllables
+            'بذر', 'کاشت', 'آبیاری', 'گل', 'گیاه', 'خاک', 'کود', 'نهال', 
+            'دانه', 'تخم', 'باغ', 'گلخانه', 'باغچه', 'بوته', 'شاخه',
+            
+            # 3 syllables  
+            'پیاز', 'گوجه', 'هویج', 'کاهو', 'کلم', 'فلفل', 'خیار', 
+            'بادمجان', 'کدو', 'اسفناج', 'جعفری', 'شوید', 'ریحان', 
+            'نعناع', 'لیلیوم', 'بگونیا', 'آفتابگردان', 'گل‌رز', 'یاسمن'
+        }
+        
+        # Check for high-priority product words
+        for word in title_words:
+            if word.lower() in product_words and word.lower() in text.lower():
+                # Try to find phrase with this word
+                word_index = title_words.index(word)
+                # Try 2-word phrase starting with this word
+                if word_index + 1 < len(title_words):
+                    phrase = f"{word} {title_words[word_index + 1]}"
+                    if phrase.lower() in text.lower():
+                        match = re.search(re.escape(phrase), text, re.IGNORECASE)
+                        if match:
+                            return match.group(0)
+                # Return just the word if no phrase found
+                match = re.search(re.escape(word), text, re.IGNORECASE)
+                if match:
+                    return match.group(0)
+        
+        return None
+    
+    def _select_links_with_even_distribution(
+        self, 
+        potential_links: List[Dict], 
+        max_links: int, 
+        total_sections: int
+    ) -> List[Dict]:
+        """
+        Select links with even distribution across content.
+        
+        Args:
+            potential_links: List of potential link locations with scores
+            max_links: Maximum number of links to add
+            total_sections: Total number of content sections
+            
+        Returns:
+            Selected links with even distribution
+        """
+        if not potential_links or max_links <= 0:
+            return []
+        
+        selected = []
+        used_indices = set()
+        
+        # Calculate target distribution
+        target_spacing = total_sections / max_links if max_links > 0 else total_sections
+        
+        # Sort by score (best matches first)
+        sorted_links = sorted(potential_links, key=lambda x: x['score'], reverse=True)
+        
+        for target_position in range(0, total_sections, int(target_spacing)):
+            # Find best link near this position
+            best_link = None
+            best_distance = float('inf')
+            
+            for link in sorted_links:
+                if link['section_index'] in used_indices:
+                    continue
+                
+                distance = abs(link['section_index'] - target_position)
+                if distance < best_distance:
+                    best_distance = distance
+                    best_link = link
+            
+            if best_link and len(selected) < max_links:
+                selected.append(best_link)
+                used_indices.add(best_link['section_index'])
+        
+        # If we still need more links, add the best remaining ones
+        while len(selected) < max_links and len(selected) < len(potential_links):
+            for link in sorted_links:
+                if link['section_index'] not in used_indices:
+                    selected.append(link)
+                    used_indices.add(link['section_index'])
+                    break
+            else:
+                break  # No more links available
+        
+        return selected
     
     def get_statistics(self) -> Dict[str, Any]:
         """
