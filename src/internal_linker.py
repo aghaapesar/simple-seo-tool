@@ -211,7 +211,7 @@ class InternalLinker:
         
         # Track added links
         links_added = 0
-        link_distribution = {'category': 0, 'product': 0, 'blog': 0}
+        link_distribution = {'category': 0, 'product': 0, 'blog': 0, 'other': 0}
         
         # Add links to sections
         modified_sections = []
