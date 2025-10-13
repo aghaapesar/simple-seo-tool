@@ -212,6 +212,7 @@ class InternalLinker:
         # Track added links
         links_added = 0
         link_distribution = {'category': 0, 'product': 0, 'blog': 0, 'other': 0}
+        used_urls = set()  # Track URLs that have already been linked
         
         # Add links to sections with even distribution
         modified_sections = []
@@ -230,7 +231,7 @@ class InternalLinker:
                 max_links - len(potential_links)
             )
             
-            if best_url:
+            if best_url and best_url.url not in used_urls:
                 match_score = self._calculate_match_score(section['content'].lower(), best_url)
                 potential_links.append({
                     'section_index': i,
@@ -271,6 +272,7 @@ class InternalLinker:
                     modified_sections.append(modified_content)
                     links_added += 1
                     link_distribution[selected_link['url'].url_type] += 1
+                    used_urls.add(selected_link['url'].url)  # Mark URL as used
                     logger.info(f"      ✓ Added {selected_link['url'].url_type} link: {selected_link['url'].title[:40]}")
                     logger.debug(f"         URL: {selected_link['url'].url}")
                     logger.debug(f"         Match score: {selected_link['score']:.2f}")

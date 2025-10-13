@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.3.3 (2024-10-13)
+
+### Added
+- **New Mode 4: Internal Linking Only** 🔗
+  - Standalone internal linking for existing content files
+  - Supports HTML, Word (.docx), and text files
+  - Interactive file selection from output/documents folder
+  - Automatic link distribution and relevance checking
+  - Preserves original file structure while adding internal links
+
+### Enhanced
+- **Content Generation Instructions**
+  - Users can now provide additional content generation instructions
+  - Instructions are automatically included in AI prompts
+  - Supports custom structure requirements (FAQ, step-by-step guides, etc.)
+
+### Fixed
+- **Internal Linking Improvements**
+  - Fixed KeyError for 'other' URL type in link distribution
+  - Enhanced semantic matching for Persian content
+  - Improved anchor text selection with 2-3 syllable product name priority
+  - Even distribution of links throughout content (not just beginning/end)
+  - One link per destination page limit implemented
+  - Better relevance scoring with exact matches and keyword bonuses
+
+### Technical
+- Added comprehensive content harmony checking
+- Enhanced error handling and user feedback
+- Improved file export status reporting
+- Better debugging and logging for internal linking process
+
 ## [2.3.2] - 2024-10-13
 
 ### 🔗 Advanced Internal Linking System

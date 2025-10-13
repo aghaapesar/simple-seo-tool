@@ -173,7 +173,8 @@ class ContentGenerator:
         word_count: int,
         ai_client: Any,
         model_name: str,
-        provider: str
+        provider: str,
+        content_instructions: str = ""
     ) -> str:
         """
         Generate content for a single heading.
@@ -187,6 +188,7 @@ class ContentGenerator:
             ai_client: AI client instance
             model_name: Model name
             provider: Provider type
+            content_instructions: Additional instructions for content generation
             
         Returns:
             Generated HTML content
@@ -202,6 +204,10 @@ class ContentGenerator:
             related_headings=related_text,
             word_count=word_count
         )
+        
+        # Add content instructions if provided
+        if content_instructions:
+            prompt += f"\n\n**دستورالعمل اضافی:**\n{content_instructions}\n\n"
         
         logger.info(f"  🤖 Generating content for: {current_heading[:50]}... ({word_count} words)")
         
@@ -442,7 +448,8 @@ class ContentGenerator:
         headings: List[str],
         project_name: str,
         ai_model,
-        total_rows: int
+        total_rows: int,
+        content_instructions: str = ""
     ) -> Dict[str, Any]:
         """
         Generate complete article interactively for one row.
@@ -454,6 +461,7 @@ class ContentGenerator:
             project_name: Project name
             ai_model: AI model to use
             total_rows: Total number of rows
+            content_instructions: Additional instructions for content generation
             
         Returns:
             Dictionary with article data
@@ -542,7 +550,8 @@ class ContentGenerator:
                 word_count=word_count,
                 ai_client=ai_client,
                 model_name=ai_model.config.get('model', ''),
-                provider=ai_model.provider
+                provider=ai_model.provider,
+                content_instructions=content_instructions
             )
             heading_contents.append(content)
             print(f"  ✅ [{i+1}/{len(headings)}] {heading[:40]}...")

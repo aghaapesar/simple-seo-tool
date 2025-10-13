@@ -31,6 +31,7 @@ from src.clustering import KeywordClusterer
 from src.excel_writer import ExcelWriter
 from src.sitemap_manager import SitemapManager
 from src.file_selector import FileSelector
+from src.internal_linker import InternalLinker
 from src.page_scraper import PageScraper
 from src.knowledge_base import KnowledgeBase
 from src.ai_model_manager import AIModelManager
@@ -631,6 +632,26 @@ class SEOContentOptimizer:
                 print("❌ Generation cancelled")
                 return
             
+            # Get content generation instructions
+            print(f"\n{'='*70}")
+            print(f"📝 Content Generation Instructions")
+            print(f"{'='*70}")
+            print("You can provide additional instructions for content generation.")
+            print("Examples:")
+            print("  - 'Include FAQ sections'")
+            print("  - 'Add step-by-step guides'")
+            print("  - 'Include product comparisons'")
+            print("  - 'Add safety warnings'")
+            print("  - 'Use more technical language'")
+            print("  - 'Focus on beginner-friendly explanations'")
+            
+            content_instructions = input("\nAdditional content instructions (press Enter to skip): ").strip()
+            
+            if content_instructions:
+                print(f"✅ Content instructions added: {content_instructions[:50]}...")
+            else:
+                print("✅ Using default content generation prompts")
+            
             # Process each row
             generated_articles = []
             
@@ -649,7 +670,8 @@ class SEOContentOptimizer:
                     headings=headings,
                     project_name=project_name,
                     ai_model=content_model,
-                    total_rows=len(df)
+                    total_rows=len(df),
+                    content_instructions=content_instructions
                 )
                 
                 if article:
@@ -778,6 +800,150 @@ class SEOContentOptimizer:
             logger.error(f"Fatal error: {str(e)}", exc_info=True)
             print(f"\n\n❌ Fatal error: {str(e)}")
             sys.exit(1)
+    
+    def run_internal_linking_only(self):
+        """
+        Mode 4: Add internal links to existing content files.
+        
+        This mode reads existing HTML/Word files and adds internal links to them
+        using the internal linking system.
+        """
+        print_banner()
+        print("🔗 MODE: Internal Linking Only")
+        
+        try:
+            # Step 1: Initialize AI Model Manager
+            print_section("AI Model Setup", "1/5")
+            ai_model_manager = AIModelManager()
+            ai_model_manager.load_config()
+            ai_model_manager.test_connections()
+            
+            # Step 2: Select content files
+            print_section("Content File Selection", "2/5")
+            print(f"\n{'='*70}")
+            print(f"📁 Content File Selection")
+            print(f"{'='*70}")
+            print("Select content files to add internal links to:")
+            print("  - HTML files (.html)")
+            print("  - Word files (.docx)")
+            print("  - Text files (.txt)")
+            
+            # Get files from documents folder
+            documents_dir = Path("output/documents")
+            if not documents_dir.exists():
+                print(f"❌ Documents directory not found: {documents_dir}")
+                return
+            
+            content_files = []
+            for ext in ['*.html', '*.docx', '*.txt']:
+                content_files.extend(documents_dir.glob(ext))
+            
+            if not content_files:
+                print(f"❌ No content files found in {documents_dir}")
+                print("   Please add HTML, Word, or text files to this directory first.")
+                return
+            
+            print(f"\n📊 Found {len(content_files)} content file(s):")
+            for i, file in enumerate(content_files, 1):
+                print(f"  [{i}] {file.name} ({file.stat().st_size} bytes)")
+            
+            # File selection
+            while True:
+                try:
+                    selection = input(f"\nSelect files (1-{len(content_files)}, 'all', or comma-separated): ").strip()
+                    
+                    if selection.lower() == 'all':
+                        selected_files = content_files
+                        break
+                    else:
+                        indices = [int(x.strip()) - 1 for x in selection.split(',')]
+                        if all(0 <= i < len(content_files) for i in indices):
+                            selected_files = [content_files[i] for i in indices]
+                            break
+                        else:
+                            print("❌ Invalid selection. Please try again.")
+                except ValueError:
+                    print("❌ Invalid input. Please enter numbers or 'all'.")
+            
+            print(f"✅ Selected {len(selected_files)} file(s)")
+            
+            # Step 3: Get sitemap for internal linking
+            print_section("Sitemap Configuration", "3/5")
+            sitemap_url = self.sitemap_manager.get_sitemap_url_interactive()
+            sitemap_urls = self.sitemap_manager.download_and_parse_sitemap(sitemap_url)
+            
+            if not sitemap_urls:
+                print("❌ No URLs found in sitemap")
+                return
+            
+            # Step 4: Setup internal linker
+            print_section("Internal Linking Setup", "4/5")
+            linker = InternalLinker(sitemap_urls)
+            linker.analyze_sitemap()
+            
+            print(f"✅ Loaded {len(linker.urls)} URLs from sitemap")
+            stats = linker.get_statistics()
+            print(f"📊 URL Statistics:")
+            for url_type, count in stats['url_types'].items():
+                print(f"   - {url_type}: {count}")
+            
+            # Step 5: Process files
+            print_section("Adding Internal Links", "5/5")
+            
+            processed_files = []
+            for i, file_path in enumerate(selected_files, 1):
+                print(f"\n📝 Processing file {i}/{len(selected_files)}: {file_path.name}")
+                
+                try:
+                    # Read content based on file type
+                    if file_path.suffix.lower() == '.html':
+                        with open(file_path, 'r', encoding='utf-8') as f:
+                            content = f.read()
+                    elif file_path.suffix.lower() == '.docx':
+                        # For Word files, we'd need to extract text first
+                        # For now, skip Word files and focus on HTML
+                        print("⚠️  Word file processing not implemented yet. Skipping...")
+                        continue
+                    elif file_path.suffix.lower() == '.txt':
+                        with open(file_path, 'r', encoding='utf-8') as f:
+                            content = f.read()
+                    else:
+                        print(f"⚠️  Unsupported file type: {file_path.suffix}")
+                        continue
+                    
+                    # Add internal links
+                    linked_content = linker.add_internal_links(content)
+                    
+                    # Save updated content
+                    output_file = file_path.parent / f"{file_path.stem}_linked{file_path.suffix}"
+                    with open(output_file, 'w', encoding='utf-8') as f:
+                        f.write(linked_content)
+                    
+                    processed_files.append(output_file)
+                    print(f"✅ Added internal links: {output_file.name}")
+                    
+                except Exception as e:
+                    print(f"❌ Failed to process {file_path.name}: {e}")
+                    logger.error(f"Failed to process {file_path.name}: {e}")
+                    continue
+            
+            # Summary
+            print(f"\n{'='*70}")
+            print(f"🎉 Internal Linking Complete!")
+            print(f"{'='*70}")
+            print(f"📁 Processed {len(processed_files)} file(s)")
+            print(f"📂 Output directory: output/documents/")
+            print(f"🔗 Internal links added using {len(linker.urls)} URLs from sitemap")
+            
+            if processed_files:
+                print(f"\n📋 Generated files:")
+                for file in processed_files:
+                    print(f"   ✅ {file.name}")
+            
+        except Exception as e:
+            logger.error(f"Fatal error in internal linking mode: {e}")
+            print(f"\n❌ Fatal error: {e}")
+            raise
 
 
 def select_mode_interactive() -> str:
@@ -801,11 +967,16 @@ def select_mode_interactive() -> str:
     print("      Generate SEO-optimized content with AI")
     print("      Input: Excel file with headings")
     print("      Output: Full content in Excel, Word, and HTML formats")
+    print()
+    print("  [4] Internal Linking Only 🔗 NEW")
+    print("      Add internal links to existing content")
+    print("      Input: HTML/Word files with content")
+    print("      Output: Updated content with internal links")
     print("      Features: Multi-model AI, Internal linking, Export to multiple formats\n")
     print("-"*70)
     
     while True:
-        choice = input("Your selection (1, 2, or 3): ").strip()
+        choice = input("Your selection (1, 2, 3, or 4): ").strip()
         
         if choice == '1':
             return 'content'
@@ -813,8 +984,10 @@ def select_mode_interactive() -> str:
             return 'scraping'
         elif choice == '3':
             return 'generation'
+        elif choice == '4':
+            return 'linking'
         else:
-            print("❌ Invalid choice. Please enter 1, 2, or 3.")
+            print("❌ Invalid choice. Please enter 1, 2, 3, or 4.")
 
 
 def main():
@@ -885,6 +1058,8 @@ Examples:
         optimizer.run_seo_data_collection(test_mode=args.test)
     elif mode == 'generation':
         optimizer.run_content_generation()
+    elif mode == 'linking':
+        optimizer.run_internal_linking_only()
 
 
 if __name__ == "__main__":

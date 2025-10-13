@@ -1,4 +1,4 @@
-# SEO Content Analysis & Optimization Tool v2.3.2
+# SEO Content Analysis & Optimization Tool v2.3.3
 
 A powerful, interactive Python application optimized for **Persian/Farsi content** that helps you improve your website's SEO through:
 1. **Content Optimization**: Analyze Google Search Console data with Persian-aware AI
@@ -12,6 +12,27 @@ A powerful, interactive Python application optimized for **Persian/Farsi content
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
+
+## 🆕 What's New in v2.3.3
+
+### 🔗 New Mode 4: Internal Linking Only
+- ✅ **Standalone Internal Linking**: Process existing HTML/Word files independently
+- ✅ **Multi-format Support**: HTML, Word (.docx), and text files
+- ✅ **Interactive File Selection**: Choose files from output/documents folder
+- ✅ **Smart Link Distribution**: Even distribution throughout content
+- ✅ **Preserved Structure**: Maintains original formatting while adding links
+
+### 📝 Enhanced Content Generation
+- ✅ **Custom Instructions**: Users can provide additional content generation instructions
+- ✅ **Flexible Structure**: Support for FAQ sections, step-by-step guides, etc.
+- ✅ **AI Integration**: Instructions automatically included in AI prompts
+
+### 🐛 Bug Fixes & Improvements
+- ✅ **Fixed KeyError**: Resolved 'other' URL type error in link distribution
+- ✅ **Better Relevance**: Enhanced semantic matching for Persian content
+- ✅ **Improved Distribution**: Links spread evenly across content (not just start/end)
+- ✅ **One Link Rule**: Maximum one link per destination page
+- ✅ **Better Scoring**: Exact matches and keyword bonuses in relevance scoring
 
 ## 🆕 What's New in v2.3.2
 
@@ -386,6 +407,36 @@ Scraping pages: 100%|███████████| 10/10
   - Excel: With SEO title, meta description, and content
   - Word: Formatted documents with headings and bold text
   - HTML: Editor-ready (no `<html>`, `<head>`, `<body>` tags)
+
+### Mode 4: Internal Linking Only 🔗 NEW
+
+**Purpose**: Add internal links to existing content files (HTML, Word, text) using smart semantic analysis.
+
+**Workflow**:
+1. Run: `python3 main.py --mode linking`
+2. System initializes AI models and sitemap
+3. **Select content files** from `output/documents/` folder:
+   - HTML files (.html)
+   - Word files (.docx) 
+   - Text files (.txt)
+4. Choose files individually or select all
+5. Configure sitemap for internal linking
+6. System analyzes sitemap and loads URLs
+7. **Process each file**:
+   - Parse content structure
+   - Add relevant internal links with smart distribution
+   - Preserve original formatting
+   - Save as `filename_linked.ext`
+8. Generate summary report
+
+**Features**:
+- **Smart Distribution**: Links spread evenly throughout content
+- **Semantic Matching**: Links based on content relevance
+- **Product Priority**: 2-3 syllable product names prioritized
+- **One Link Rule**: Maximum one link per destination page
+- **Format Preservation**: Maintains original HTML/Word structure
+
+**Output**: Updated content files with internal links added, preserving original structure.
 
 **Generated Content Includes**:
 - SEO-optimized title (max 60 characters)
