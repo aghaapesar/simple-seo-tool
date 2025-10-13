@@ -245,6 +245,8 @@ class InternalLinker:
                         links_added += 1
                         link_distribution[best_url.url_type] += 1
                         logger.info(f"      ✓ Added {best_url.url_type} link: {best_url.title[:40]}")
+                        logger.debug(f"         URL: {best_url.url}")
+                        logger.debug(f"         Match score: {self._calculate_match_score(section['content'].lower(), best_url):.2f}")
                     else:
                         modified_sections.append(section['content'])
                 else:
@@ -357,8 +359,8 @@ class InternalLinker:
         # Sort by score
         scored_urls.sort(key=lambda x: x[0], reverse=True)
         
-        # Return best match if score is good enough
-        if scored_urls and scored_urls[0][0] > 0.3:
+        # Return best match if score is good enough (lowered threshold for more links)
+        if scored_urls and scored_urls[0][0] > 0.15:
             return scored_urls[0][1]
         
         return None
@@ -376,20 +378,71 @@ class InternalLinker:
         """
         score = 0.0
         
+        # Check exact phrase matches first (highest priority)
+        title_lower = url_item.title.lower()
+        if title_lower in text:
+            score += 0.8
+        
         # Check if title words appear in text
-        title_words = url_item.title.lower().split()
+        title_words = title_lower.split()
         for word in title_words:
             if len(word) > 2 and word in text:
-                score += 0.2
+                score += 0.3
         
         # Check if keywords appear in text
         for keyword in url_item.keywords:
             keyword_lower = keyword.lower()
-            if len(keyword_lower) > 2 and keyword_lower in text:
-                score += 0.15
+            if len(keyword_lower) > 2:
+                if keyword_lower in text:
+                    score += 0.4
+                # Partial word matches
+                elif any(word in text for word in keyword_lower.split() if len(word) > 2):
+                    score += 0.2
+        
+        # Check URL path for relevant terms
+        url_path = url_item.url.lower()
+        for word in title_words:
+            if word in url_path and word in text:
+                score += 0.2
+        
+        # Semantic similarity bonus for Persian content
+        if self._has_semantic_similarity(text, url_item):
+            score += 0.3
         
         # Cap at 1.0
         return min(score, 1.0)
+    
+    def _has_semantic_similarity(self, text: str, url_item: URLItem) -> bool:
+        """
+        Check for semantic similarity between text and URL item.
+        
+        Args:
+            text: Text content
+            url_item: URL item
+            
+        Returns:
+            True if semantically similar
+        """
+        # Common Persian word relationships
+        semantic_groups = {
+            'گل': ['گل', 'گیاه', 'کاشت', 'بذر', 'گلخانه', 'باغچه'],
+            'بذر': ['بذر', 'کاشت', 'گیاه', 'گل', 'نهال', 'دانه'],
+            'کاشت': ['کاشت', 'بذر', 'گیاه', 'گل', 'آبیاری', 'خاک'],
+            'آبیاری': ['آبیاری', 'آب', 'گیاه', 'کاشت', 'باغچه'],
+            'خاک': ['خاک', 'کاشت', 'گیاه', 'باغچه', 'کود'],
+            'کود': ['کود', 'خاک', 'گیاه', 'کاشت', 'باغچه'],
+            'باغچه': ['باغچه', 'گیاه', 'کاشت', 'آبیاری', 'خاک']
+        }
+        
+        # Check if any semantic group appears in both text and URL
+        for group_words in semantic_groups.values():
+            text_has_group = any(word in text for word in group_words)
+            title_has_group = any(word in url_item.title.lower() for word in group_words)
+            
+            if text_has_group and title_has_group:
+                return True
+        
+        return False
     
     def _add_link_to_section(
         self,
