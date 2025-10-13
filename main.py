@@ -812,14 +812,8 @@ class SEOContentOptimizer:
         print("🔗 MODE: Internal Linking Only")
         
         try:
-            # Step 1: Initialize AI Model Manager
-            print_section("AI Model Setup", "1/5")
-            ai_model_manager = AIModelManager()
-            ai_model_manager.load_config()
-            ai_model_manager.test_connections()
-            
-            # Step 2: Select content files
-            print_section("Content File Selection", "2/5")
+            # Step 1: Select content files
+            print_section("Content File Selection", "1/4")
             print(f"\n{'='*70}")
             print(f"📁 Content File Selection")
             print(f"{'='*70}")
@@ -867,8 +861,8 @@ class SEOContentOptimizer:
             
             print(f"✅ Selected {len(selected_files)} file(s)")
             
-            # Step 3: Get sitemap for internal linking
-            print_section("Sitemap Configuration", "3/5")
+            # Step 2: Get sitemap for internal linking
+            print_section("Sitemap Configuration", "2/4")
             sitemap_url = self.sitemap_manager.get_sitemap_url_interactive()
             sitemap_urls = self.sitemap_manager.download_and_parse_sitemap(sitemap_url)
             
@@ -876,8 +870,8 @@ class SEOContentOptimizer:
                 print("❌ No URLs found in sitemap")
                 return
             
-            # Step 4: Setup internal linker
-            print_section("Internal Linking Setup", "4/5")
+            # Step 3: Setup internal linker
+            print_section("Internal Linking Setup", "3/4")
             linker = InternalLinker(sitemap_urls)
             linker.analyze_sitemap()
             
@@ -887,8 +881,8 @@ class SEOContentOptimizer:
             for url_type, count in stats['url_types'].items():
                 print(f"   - {url_type}: {count}")
             
-            # Step 5: Process files
-            print_section("Adding Internal Links", "5/5")
+            # Step 4: Process files
+            print_section("Adding Internal Links", "4/4")
             
             processed_files = []
             for i, file_path in enumerate(selected_files, 1):
