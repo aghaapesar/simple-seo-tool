@@ -45,9 +45,10 @@ class ContentGenerator:
 - E-E-A-T: تخصص، تجربه، اعتبار و اعتمادپذیری
 - تنوع در جملات: ترکیب جملات کوتاه و بلند
 - طبیعی بودن: عبارات محاوره‌ای ملایم، مثال‌های عملی
+- **مهم:** بدون نتیجه‌گیری یا جمع‌بندی برای این بخش - فقط محتوای اصلی
 
 **خروجی:**
-فقط متن محتوا را برای این هدینگ بنویس (بدون ذکر خود هدینگ). محتوا باید با تگ‌های HTML فرمت‌بندی شود:
+فقط متن محتوا را برای این هدینگ بنویس (بدون ذکر خود هدینگ و بدون نتیجه‌گیری). محتوا باید با تگ‌های HTML فرمت‌بندی شود:
 - برای زیرعناوین از <h3> استفاده کن
 - برای تاکید از <strong> استفاده کن  
 - برای لیست‌ها از <ul> و <li> استفاده کن
@@ -206,7 +207,7 @@ class ContentGenerator:
         
         try:
             # Generate content based on provider
-            if provider in ["openai", "openai_compatible", "groq"]:
+            if provider in ["openai", "openai_compatible", "grok"]:
                 response = ai_client.chat.completions.create(
                     model=model_name,
                     messages=[
@@ -259,7 +260,7 @@ class ContentGenerator:
         logger.info(f"  📝 Generating introduction...")
         
         try:
-            if provider in ["openai", "openai_compatible", "groq"]:
+            if provider in ["openai", "openai_compatible", "grok"]:
                 response = ai_client.chat.completions.create(
                     model=model_name,
                     messages=[
@@ -307,7 +308,7 @@ class ContentGenerator:
         logger.info(f"  📝 Generating conclusion...")
         
         try:
-            if provider in ["openai", "openai_compatible", "groq"]:
+            if provider in ["openai", "openai_compatible", "grok"]:
                 response = ai_client.chat.completions.create(
                     model=model_name,
                     messages=[
@@ -331,6 +332,108 @@ class ContentGenerator:
         except Exception as e:
             logger.error(f"  ❌ Failed to generate conclusion: {e}")
             raise
+    
+    def ensure_content_harmony(
+        self,
+        heading_contents: List[str],
+        headings: List[str],
+        main_topic: str,
+        ai_client: Any,
+        model_name: str,
+        provider: str
+    ) -> List[str]:
+        """
+        Check and ensure content harmony across all headings.
+        
+        Args:
+            heading_contents: List of generated content for each heading
+            headings: List of headings
+            main_topic: Main topic
+            ai_client: AI client instance
+            model_name: Model name
+            provider: Provider type
+            
+        Returns:
+            List of harmonized content
+        """
+        # Build harmony check prompt
+        content_preview = ""
+        for i, (heading, content) in enumerate(zip(headings, heading_contents), 1):
+            # Get first 150 chars of content for preview
+            text_only = re.sub(r'<[^>]+>', '', content)
+            preview = text_only[:150] + "..." if len(text_only) > 150 else text_only
+            content_preview += f"{i}. **{heading}**: {preview}\n"
+        
+        harmony_prompt = f"""
+**نقش شما:** 
+متخصص ویرایش و بررسی هماهنگی محتوا.
+
+**موضوع مقاله:** {main_topic}
+
+**محتوای تولید شده:**
+{content_preview}
+
+**دستورالعمل:**
+این محتوا را از نظر هماهنگی بررسی کن. آیا:
+1. لحن نوشتاری در همه بخش‌ها یکسان است؟
+2. سبک نگارش ثابت است؟
+3. ارتباط منطقی بین بخش‌ها وجود دارد؟
+4. تکرار غیرضروری اطلاعات نیست؟
+
+**خروجی:**
+فقط "OK" بنویس اگر محتوا هماهنگ است.
+اگر مشکلی وجود دارد، شماره بخش و توضیح کوتاه بده (مثال: "بخش 2: لحن خیلی رسمی‌تر از بقیه است").
+"""
+        
+        try:
+            if provider in ["openai", "openai_compatible", "grok"]:
+                response = ai_client.chat.completions.create(
+                    model=model_name,
+                    messages=[
+                        {"role": "system", "content": "You are a content harmony expert."},
+                        {"role": "user", "content": harmony_prompt}
+                    ],
+                    temperature=0.3,
+                    max_tokens=500
+                )
+                result = response.choices[0].message.content.strip()
+            
+            elif provider == "anthropic":
+                response = ai_client.messages.create(
+                    model=model_name,
+                    max_tokens=500,
+                    temperature=0.3,
+                    messages=[
+                        {"role": "user", "content": harmony_prompt}
+                    ]
+                )
+                result = response.content[0].text.strip()
+            
+            elif provider == "gemini":
+                response = ai_client.generate_content(
+                    harmony_prompt,
+                    generation_config={
+                        'temperature': 0.3,
+                        'max_output_tokens': 500
+                    }
+                )
+                result = response.text.strip()
+            
+            else:
+                logger.warning(f"Unknown provider: {provider}")
+                return heading_contents
+            
+            # Log harmony check result
+            if result.upper() == "OK":
+                logger.info("✅ Content harmony confirmed")
+            else:
+                logger.warning(f"⚠️ Harmony note: {result}")
+            
+            return heading_contents
+            
+        except Exception as e:
+            logger.error(f"Harmony check failed: {e}")
+            return heading_contents
     
     def generate_article_interactive(
         self,
@@ -471,6 +574,18 @@ class ContentGenerator:
             provider=ai_model.provider
         )
         print(f"  ✅ Conclusion generated")
+        
+        # Ensure content harmony
+        print(f"\n  🔍 Checking content harmony...")
+        heading_contents = self.ensure_content_harmony(
+            heading_contents=heading_contents,
+            headings=headings,
+            main_topic=main_topic,
+            ai_client=ai_client,
+            model_name=ai_model.config.get('model', ''),
+            provider=ai_model.provider
+        )
+        print(f"  ✅ Content harmony verified")
         
         # Combine all content
         full_content = f"{intro}\n\n"

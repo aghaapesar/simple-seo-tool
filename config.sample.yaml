@@ -85,19 +85,19 @@ ai_models:
     api_key: "env:GOOGLE_API_KEY"
     model: "gemini-pro-vision"
   
-  groq_llama3_70b:
-    provider: "groq"
-    api_key: "env:GROQ_API_KEY"
+  grok_llama3_70b:
+    provider: "grok"
+    api_key: "env:GROK_API_KEY"
     model: "llama3-70b-8192"
     
-  groq_llama3_8b:
-    provider: "groq"
-    api_key: "env:GROQ_API_KEY"
+  grok_llama3_8b:
+    provider: "grok"
+    api_key: "env:GROK_API_KEY"
     model: "llama3-8b-8192"
     
-  groq_mixtral:
-    provider: "groq"
-    api_key: "env:GROQ_API_KEY"
+  grok_mixtral:
+    provider: "grok"
+    api_key: "env:GROK_API_KEY"
     model: "mixtral-8x7b-32768"
 
 # Application settings
@@ -126,5 +126,5 @@ app:
 # export OPENAI_API_KEY="sk-your-openai-key"
 # export ANTHROPIC_API_KEY="sk-ant-your-claude-key"
 # export GOOGLE_API_KEY="your-google-api-key"
-# export GROQ_API_KEY="gsk_your-groq-key"
+# export GROK_API_KEY="gsk_your-grok-key"
 # export AZURE_OPENAI_API_KEY="your-azure-key"

@@ -76,7 +76,7 @@ python3 main.py --mode generation
 ```
 
 **Features**:
-- Multi-AI model selection (Claude, GPT-4, Gemini, Groq, etc.)
+- Multi-AI model selection (Claude, GPT-4, Gemini, Grok, etc.)
 - Persian SEO-optimized content generation
 - Smart internal linking with semantic analysis
 - Word and HTML export with proper formatting
@@ -183,7 +183,7 @@ Excel (Mode 1) → Topic + Headings → Word Counts → AI Generation → Comple
 1. **OpenAI** (GPT-4, GPT-4o, GPT-4o-mini)
 2. **Anthropic** (Claude 3 Opus, Sonnet, Haiku)
 3. **Google** (Gemini Pro, Gemini Pro Vision)
-4. **Groq** (Llama 3, Mixtral)
+4. **Grok** (Llama 3, Mixtral)
 5. **OpenAI-Compatible** (Liara.ir, LM Studio, Ollama, etc.)
 
 ### Model Selection Interface
@@ -199,7 +199,7 @@ Excel (Mode 1) → Topic + Headings → Word Counts → AI Generation → Comple
 
 ❌ Failed Models:
   - openai_gpt4 (Invalid API key)
-  - groq_llama3 (Connection timeout)
+  - grok_llama3 (Connection timeout)
 
 🤖 Default model: liara_gpt4o_mini
 ```
@@ -254,7 +254,7 @@ openai_gpt4o:
 - **OpenAI**: JSON mode, function calling
 - **Anthropic**: Structured output, longer context
 - **Gemini**: Multimodal capabilities, fast responses
-- **Groq**: High-speed inference, cost-effective
+- **Grok**: High-speed inference, cost-effective
 
 ---
 

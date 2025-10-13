@@ -40,7 +40,7 @@ All notable changes to this project will be documented in this file.
 - **Batch Processing**: Process multiple headings in one run with progress tracking
 
 #### Multi-Model AI Support 🤖 NEW
-- **Multiple Provider Support**: OpenAI, Claude (Anthropic), Gemini (Google), Groq
+- **Multiple Provider Support**: OpenAI, Claude (Anthropic), Gemini (Google), Grok
 - **Model Configuration**: Configure unlimited AI models in `config.yaml`
 - **Connection Testing**: Test all configured models before use
 - **Default Model**: Set a default model for all operations

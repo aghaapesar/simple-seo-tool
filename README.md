@@ -16,7 +16,7 @@ A powerful, interactive Python application optimized for **Persian/Farsi content
 ## 🆕 What's New in v2.3.0
 
 ### AI Content Generation ✨ NEW
-- ✅ **Multi-Model AI Support**: Choose from OpenAI, Claude, Gemini, Groq, and more
+- ✅ **Multi-Model AI Support**: Choose from OpenAI, Claude, Gemini, Grok, and more
 - ✅ **Persian SEO Content**: Specialized prompts for natural, SEO-optimized Persian content
 - ✅ **Smart Internal Linking**: Automatic internal links based on sitemap analysis
 - ✅ **Multiple Export Formats**: Excel, Word (.docx), and editor-ready HTML
@@ -27,7 +27,7 @@ A powerful, interactive Python application optimized for **Persian/Farsi content
 - ✅ **Configure Multiple Models**: Set up multiple AI providers in one config file
 - ✅ **Default Model**: Set a default model for all operations
 - ✅ **Per-Operation Selection**: Choose specific models for specific tasks
-- ✅ **Supported Providers**: OpenAI, Claude (Anthropic), Gemini (Google), Groq, and OpenAI-compatible APIs
+- ✅ **Supported Providers**: OpenAI, Claude (Anthropic), Gemini (Google), Grok, and OpenAI-compatible APIs
 
 ### Internal Linking System
 - ✅ **Semantic Matching**: Links based on content relevance
@@ -358,7 +358,7 @@ Scraping pages: 100%|███████████| 10/10
 | راهنمای کاشت گلها | 1500 | کاشت | راهنما | اطلاعاتی | 2000 | معرفی گل لیلیوم | نحوه کاشت | ... |
 
 **Key Features**:
-- **Multi-Model AI Support**: Choose from OpenAI, Claude, Gemini, Groq, and more
+- **Multi-Model AI Support**: Choose from OpenAI, Claude, Gemini, Grok, and more
 - **Persian SEO Optimization**: Content follows Persian SEO best practices
 - **Smart Internal Linking**: 
   - 1 link per 300-400 words
@@ -638,9 +638,9 @@ ai_models:
     api_key: "env:GOOGLE_API_KEY"
     model: "gemini-pro"
   
-  groq_llama3_70b:
-    provider: "groq"
-    api_key: "env:GROQ_API_KEY"
+  grok_llama3_70b:
+    provider: "grok"
+    api_key: "env:GROK_API_KEY"
     model: "llama3-70b-8192"
 ```
 
@@ -651,7 +651,7 @@ ai_models:
 | **OpenAI** | `openai` | GPT-4, GPT-4o, GPT-3.5 | `api_key`, `base_url`, `model` |
 | **Claude** | `anthropic` | Claude 3 (Opus, Sonnet, Haiku) | `api_key`, `model` |
 | **Gemini** | `gemini` | Gemini Pro, Gemini Pro Vision | `api_key`, `model` |
-| **Groq** | `groq` | Llama 3, Mixtral | `api_key`, `model` |
+| **Grok** | `grok` | Llama 3, Mixtral | `api_key`, `model` |
 | **Liara.ir** | `openai_compatible` | Any OpenAI-compatible | `api_key`, `base_url`, `model` |
 | **Custom** | `openai_compatible` | Any OpenAI-compatible API | `api_key`, `base_url`, `model` |
 
@@ -663,7 +663,7 @@ You can use `env:VARIABLE_NAME` to read API keys from environment variables:
 export OPENAI_API_KEY="sk-your-openai-key"
 export ANTHROPIC_API_KEY="sk-ant-your-claude-key"
 export GOOGLE_API_KEY="your-google-api-key"
-export GROQ_API_KEY="gsk_your-groq-key"
+export GROK_API_KEY="gsk_your-grok-key"
 
 # Run the tool
 python3 main.py --mode generation
@@ -1020,7 +1020,7 @@ SEOContentAnalysis/
 **هدف**: تولید محتوای SEO بهینه‌شده فارسی با هوش مصنوعی، پشتیبانی از چند مدل و لینک‌دهی داخلی خودکار.
 
 **ویژگی‌های کلیدی**:
-- **پشتیبانی چند مدل AI**: انتخاب از بین OpenAI، Claude، Gemini، Groq و غیره
+- **پشتیبانی چند مدل AI**: انتخاب از بین OpenAI، Claude، Gemini، Grok و غیره
 - **بهینه‌سازی SEO فارسی**: محتوا با رعایت اصول SEO فارسی
 - **لینک‌دهی داخلی هوشمند**:
   - ۱ لینک به ازای هر ۳۰۰-۴۰۰ کلمه
@@ -1146,7 +1146,7 @@ ai_models:
 export OPENAI_API_KEY="کلید-OpenAI"
 export ANTHROPIC_API_KEY="کلید-Claude"
 export GOOGLE_API_KEY="کلید-Google"
-export GROQ_API_KEY="کلید-Groq"
+export GROK_API_KEY="کلید-Grok"
 ```
 
 ---

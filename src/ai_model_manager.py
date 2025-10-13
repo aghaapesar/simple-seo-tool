@@ -1,7 +1,7 @@
 """
 AI Model Manager - Multi-Provider AI Model Management
 
-This module manages multiple AI providers (OpenAI, Claude, Gemini, Groq, etc.)
+This module manages multiple AI providers (OpenAI, Claude, Gemini, Grok, etc.)
 and provides a unified interface for model selection and usage.
 
 Features:
@@ -31,7 +31,7 @@ class AIModel:
         
         Args:
             name: Display name for the model
-            provider: Provider type (openai, claude, gemini, groq, etc.)
+            provider: Provider type (openai, claude, gemini, grok, etc.)
             config: Configuration dictionary for this model
             is_default: Whether this is the default model
         """
