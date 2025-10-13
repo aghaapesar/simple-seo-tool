@@ -2,6 +2,144 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.0] - 2024-10-12
+
+### 🔧 Updates & Improvements (2024-10-13)
+
+#### Content Generation Workflow Redesign
+- **Automatic Topic Reading**: Main topic automatically read from first column (no manual input)
+- **Header Detection**: First row treated as column headers
+- **Interactive Word Count**: Ask for total article words, then distribute per heading
+- **Per-Heading Generation**: Generate content for each heading separately with custom word counts
+- **Introduction & Conclusion**: Automatically generated based on article content
+- **Complete Articles**: Each row becomes one complete article with intro, body, and conclusion
+
+#### Fixes
+- Fixed: Content generation now reads Excel files from `output/` folder instead of `input/`
+- Fixed: File selector shows files from output directory for Mode 3
+- Improved: Better user guidance when no files are found
+
+#### User Experience
+- **Excel Structure**:
+  - Row 1: Column headers
+  - Column 1: Article topic (automatically used)
+  - Columns 2-6: Additional data (predictions, clusters, content type, search intent, word count)
+  - Columns 7+: H2 headings (only these used for content generation)
+  - Each row = One complete article
+- **Smart Column Detection**: Automatically identifies heading columns by "هدینگ H2" pattern
+- **Interactive Process**: Confirm each article, set word counts, review progress
+- **Smart Prompts**: Separate prompts for headings, introduction, and conclusion
+
+### 🎉 Major Features
+
+#### AI Content Generation System ✨ NEW
+- **Content Generator**: Full Persian SEO content generation from Excel headings
+- **Multi-Format Export**: Automatic export to Excel, Word (.docx), and HTML formats
+- **Smart Content Prompt**: Specialized Persian SEO prompt with E-E-A-T principles
+- **Natural Writing**: Random spacing variations for natural appearance
+- **Batch Processing**: Process multiple headings in one run with progress tracking
+
+#### Multi-Model AI Support 🤖 NEW
+- **Multiple Provider Support**: OpenAI, Claude (Anthropic), Gemini (Google), Groq
+- **Model Configuration**: Configure unlimited AI models in `config.yaml`
+- **Connection Testing**: Test all configured models before use
+- **Default Model**: Set a default model for all operations
+- **Per-Operation Selection**: Choose different models for different tasks
+- **Environment Variables**: Support for `env:VAR_NAME` to read API keys securely
+
+#### Smart Internal Linking System 🔗 NEW
+- **Sitemap Analysis**: Parse and categorize URLs from sitemap
+- **URL Categorization**: Automatic detection of categories, products, blogs
+- **Semantic Matching**: Links based on content relevance
+- **Smart Rules Implementation**:
+  - 1 link per 300-400 words
+  - No links in headings
+  - Priority system: Categories > Products > Blog posts
+  - Anchor text optimization (max 5 syllables)
+- **Fuzzy Matching**: Intelligent anchor text selection with similarity matching
+
+#### Document Export System 📄 NEW
+- **Word Export**: Formatted .docx documents with proper structure
+- **HTML Export**: Editor-ready HTML (no wrapper tags)
+- **SEO Information**: Separate title and meta description sections
+- **Batch Export**: Export all generated content at once
+- **Structure Preservation**: Maintains headings, bold text, lists, links
+
+### 🛠️ New Modules
+
+- `src/ai_model_manager.py`: Multi-provider AI model management
+- `src/content_generator.py`: AI content generation engine
+- `src/internal_linker.py`: Smart internal linking system
+- `src/document_exporter.py`: Word and HTML export functionality
+
+### 🔧 Configuration Changes
+
+- Added `ai_models` section in `config.yaml` for multi-model configuration
+- Legacy `ai` section maintained for backward compatibility
+- Support for environment variable API keys with `env:` prefix
+
+### 📦 Dependencies
+
+- Added `python-docx>=0.8.11` for Word document generation
+- Added `google-generativeai>=0.3.0` for Gemini support
+
+### 🎨 User Interface
+
+- New mode selection option: "AI Content Generation"
+- Interactive model selection interface
+- Progress bars for content generation and export
+- Connection status display for all configured models
+- Comprehensive statistics after content generation
+
+### 📝 Content Generation Features
+
+- Custom word count per heading
+- Persian-aware content structure
+- SEO title generation (max 60 chars)
+- Meta description generation (max 160 chars)
+- HTML content with proper tags (H2, H3, p, strong, ul, li, a)
+- JSON response parsing with fallback
+- Error handling and retry logic
+
+### 🔗 Internal Linking Features
+
+- URL type detection (category, product, blog, other)
+- Semantic relevance scoring
+- Anchor text extraction from URLs
+- Distribution balancing (equal spread across types)
+- Section-based link placement (avoid headers)
+- Statistics reporting
+
+### 📊 Export Features
+
+- Excel: Combined output with SEO info and content
+- Word: Formatted documents with sections
+- HTML: Clean output for CMS/editors
+- Batch processing with error handling
+- Safe filename generation from titles
+
+### 🐛 Bug Fixes
+
+- Fixed pandas import in main.py for content generation
+- Improved error messages for missing dependencies
+- Better handling of malformed JSON responses from AI
+
+### 📖 Documentation
+
+- Complete README update with Mode 3 documentation
+- Persian documentation for new features
+- Configuration examples for all supported providers
+- Workflow examples for content generation
+- Troubleshooting section updates
+
+### 🚀 Performance
+
+- Parallel processing support for content generation
+- Efficient sitemap parsing and caching
+- Optimized internal link matching algorithms
+
+---
+
 ## [2.2.3] - 2024-10-11
 
 ### 🔄 Smart Clustering & Fallback Strategy

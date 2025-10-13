@@ -161,6 +161,297 @@ python main.py -i competitor_queries.xlsx
 
 ---
 
+## 📊 Example 6: AI Content Generation Workflow ✨ NEW
+
+### Scenario
+You've identified 15 high-potential content opportunities from Search Console analysis, and now you want to generate full SEO-optimized articles with internal linking.
+
+### Complete Workflow
+
+#### Step 1: Analyze and Get Ideas
+```bash
+# First, run content optimization to get ideas
+python3 main.py --mode content
+
+# This creates: output/new_content_blog.xlsx
+# Contains: Article titles, recommended keywords, H2/H3 suggestions
+```
+
+#### Step 2: Configure Multiple AI Models
+Edit `config.yaml`:
+```yaml
+ai_models:
+  default: "claude_sonnet"  # Use Claude as default
+  
+  claude_sonnet:
+    provider: "anthropic"
+    api_key: "env:ANTHROPIC_API_KEY"
+    model: "claude-3-5-sonnet-20241022"
+  
+  openai_gpt4o:
+    provider: "openai"
+    api_key: "env:OPENAI_API_KEY"
+    base_url: "https://api.openai.com/v1"
+    model: "gpt-4o"
+  
+  gemini_pro:
+    provider: "gemini"
+    api_key: "env:GOOGLE_API_KEY"
+    model: "gemini-pro"
+```
+
+Set environment variables:
+```bash
+export ANTHROPIC_API_KEY="sk-ant-your-key"
+export OPENAI_API_KEY="sk-your-key"
+export GOOGLE_API_KEY="your-google-key"
+```
+
+#### Step 3: Generate Content
+```bash
+python3 main.py --mode generation
+
+# Interactive process:
+# 1. System tests all 3 models → Shows connection status
+# 2. Choose: "Use default for all" (Claude Sonnet)
+# 3. Select: new_content_blog.xlsx
+# 4. Enter project: "myblog.com"
+# 5. Enter topic: "Gardening & Plants"
+# 6. Confirm model: Claude Sonnet
+# 7. Set word count: 800 words per article
+# 8. Confirm: Generate 15 articles
+```
+
+#### Step 4: Add Internal Links
+```bash
+# During generation, when prompted:
+Add internal links? (Y/n): y
+
+# Enter sitemap
+Enter sitemap URL: https://myblog.com/sitemap.xml
+
+# System will:
+# - Parse 500+ URLs from sitemap
+# - Categorize: 30 categories, 250 products, 200 blog posts
+# - Add semantic links to each article
+# - 1 link per 300-400 words
+# - Priority to category pages
+```
+
+#### Step 5: Review Outputs
+
+**Excel Output** (`output/content_generated/content_blog.xlsx`):
+| Article Title | H2_1 | H2_2 | SEO_Title | Meta_Description | Generated_Content |
+|--------------|------|------|-----------|-----------------|-------------------|
+| Complete Guide to Growing Tomatoes | Seed Selection | Soil Prep | Best Methods for Growing Tomatoes | Complete guide to planting... | `<h2>Introduction</h2>...` |
+
+**Word Documents** (`output/documents/`):
+```
+content_myblog.com_1_complete-guide-growing-tomatoes.docx
+content_myblog.com_2_organic-pest-control-methods.docx
+...
+```
+
+Each Word doc contains:
+- SEO Title (copyable)
+- Meta Description (copyable)
+- Full formatted content with headings, bold, lists, internal links
+
+**HTML Files** (`output/documents/`):
+```html
+<!-- content_myblog.com_1_complete-guide-growing-tomatoes.html -->
+
+<!-- SEO Title -->
+<!-- Best Methods for Growing Tomatoes at Home -->
+
+<!-- Meta Description -->
+<!-- Complete guide to planting and growing tomatoes with expert tips -->
+
+<!-- Content Start -->
+<h2>Introduction</h2>
+<p>Growing tomatoes in your home garden...</p>
+
+<h2>Selecting the Right Seeds</h2>
+<p>The first step is choosing <strong>quality seeds</strong>...</p>
+<p>Visit our <a href="https://myblog.com/category/seeds/">seed selection guide</a> for more details.</p>
+
+<h3>Types of Tomato Seeds</h3>
+<ul>
+  <li>Cherry tomatoes</li>
+  <li><a href="https://myblog.com/products/heirloom-tomato-seeds/">Heirloom varieties</a></li>
+  <li>Beefsteak tomatoes</li>
+</ul>
+...
+<!-- Content End -->
+```
+
+#### Step 6: Publish Content
+
+**Option A: Manual Publishing**
+1. Open Word document
+2. Copy SEO title → Paste in CMS title field
+3. Copy meta description → Paste in SEO description field
+4. Copy content from HTML file → Paste in CMS editor
+
+**Option B: Automated Publishing** (via CMS API)
+```python
+# Example script to publish via WordPress API
+import pandas as pd
+import requests
+
+df = pd.read_excel('output/content_generated/content_blog.xlsx')
+
+for _, row in df.iterrows():
+    data = {
+        'title': row['SEO_Title'],
+        'content': row['Generated_Content'],
+        'excerpt': row['Meta_Description'],
+        'status': 'draft'
+    }
+    
+    response = requests.post(
+        'https://myblog.com/wp-json/wp/v2/posts',
+        json=data,
+        auth=('username', 'app_password')
+    )
+```
+
+### Expected Results
+
+**Immediate:**
+- 15 complete, SEO-optimized articles (12,000+ words total)
+- Each with 5-8 internal links
+- All in 3 formats (Excel, Word, HTML)
+- Processing time: ~30 minutes
+
+**After 30 Days:**
+- 50-60% of articles indexed by Google
+- 30-40% ranking on page 1-3 for target keywords
+- Increased internal link equity to category/product pages
+
+**After 90 Days:**
+- 80%+ indexed
+- 50%+ ranking on page 1
+- Measurable increase in organic traffic
+
+### Pro Tips for Content Generation
+
+1. **Model Selection Strategy:**
+   - Use Claude Sonnet for long-form, natural content
+   - Use GPT-4 for technical/factual content
+   - Use Gemini Pro for multilingual content
+
+2. **Word Count Guidelines:**
+   - Blog posts: 800-1200 words
+   - Ultimate guides: 2000-3000 words
+   - Product reviews: 1500-2000 words
+   - FAQ pages: 500-800 words
+
+3. **Internal Linking Best Practices:**
+   - Always enable internal linking
+   - Ensure sitemap is up-to-date
+   - Review generated links before publishing
+   - Adjust anchor text if needed
+
+4. **Quality Control:**
+   - Review first 2-3 generated articles completely
+   - Check for factual accuracy
+   - Verify internal links work
+   - Adjust prompt if needed (edit `content_generator.py`)
+
+5. **Batch Processing:**
+   - Process 10-15 articles at a time
+   - Don't exceed API rate limits
+   - Save progress regularly
+
+### Troubleshooting
+
+**Issue: "No connected models"**
+```bash
+# Check API keys
+echo $ANTHROPIC_API_KEY
+echo $OPENAI_API_KEY
+
+# Test connection manually
+curl -H "Authorization: Bearer $ANTHROPIC_API_KEY" \
+     https://api.anthropic.com/v1/messages
+```
+
+**Issue: "Failed to generate content"**
+- Check API quota/credits
+- Try different model
+- Reduce word count
+- Check internet connection
+
+**Issue: "No internal links added"**
+- Verify sitemap URL is accessible
+- Check sitemap has valid URLs
+- Ensure content has enough words (>300)
+
+---
+
+## 📊 Example 7: Multi-Model Comparison ✨ NEW
+
+### Scenario
+You want to test which AI model produces the best content for your niche.
+
+### Workflow
+
+#### Step 1: Generate Same Content with Different Models
+
+**Run 1: Claude Sonnet**
+```bash
+python3 main.py --mode generation
+# Select: Claude Sonnet
+# Generate: 5 test articles
+# Output: content_claude/
+```
+
+**Run 2: GPT-4**
+```bash
+python3 main.py --mode generation
+# Select: GPT-4
+# Generate: Same 5 articles
+# Output: content_gpt4/
+```
+
+**Run 3: Gemini Pro**
+```bash
+python3 main.py --mode generation
+# Select: Gemini Pro
+# Generate: Same 5 articles
+# Output: content_gemini/
+```
+
+#### Step 2: Compare Results
+
+Create comparison spreadsheet:
+
+| Metric | Claude | GPT-4 | Gemini |
+|--------|--------|-------|--------|
+| Avg word count | 850 | 820 | 900 |
+| Natural language score | 9/10 | 8/10 | 7/10 |
+| SEO optimization | 8/10 | 9/10 | 8/10 |
+| Internal links quality | 9/10 | 8/10 | 7/10 |
+| Processing time | 25 min | 20 min | 30 min |
+| Cost per 1000 words | $0.15 | $0.30 | $0.05 |
+
+#### Step 3: Choose Winner
+
+Based on your priorities:
+- **Best quality:** Claude Sonnet
+- **Best SEO:** GPT-4
+- **Best value:** Gemini Pro
+- **Fastest:** GPT-4
+
+Set as default in config.yaml:
+```yaml
+ai_models:
+  default: "claude_sonnet"  # Winner!
+```
+
+---
+
 ## 🔄 Monthly Workflow
 
 ### Week 1: Data Collection

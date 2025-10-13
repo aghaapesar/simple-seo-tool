@@ -121,3 +121,10 @@ downloads/
 temp/
 tmp/
 
+# Generated content directories
+output/content_generated/
+output/documents/
+
+# Keep .gitkeep files but ignore their contents
+!.gitkeep
+

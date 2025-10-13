@@ -18,6 +18,7 @@ import sys
 import yaml
 import logging
 import argparse
+import re
 from pathlib import Path
 from typing import Dict, List
 from tqdm import tqdm
@@ -32,6 +33,10 @@ from src.sitemap_manager import SitemapManager
 from src.file_selector import FileSelector
 from src.page_scraper import PageScraper
 from src.knowledge_base import KnowledgeBase
+from src.ai_model_manager import AIModelManager
+from src.content_generator import ContentGenerator
+from src.document_exporter import DocumentExporter
+from src.internal_linker import InternalLinker
 
 
 # Configure logging with detailed format
@@ -55,7 +60,7 @@ def print_banner():
     print("\n" + "="*70)
     print("🚀 SEO CONTENT ANALYSIS & OPTIMIZATION TOOL")
     print("="*70)
-    print("Version: 2.2.3 | Smart Clustering & Fallback Strategy")
+    print("Version: 2.3.0 | Multi-Model AI + Content Generation + Internal Linking")
     print("="*70 + "\n")
 
 
@@ -510,6 +515,259 @@ class SEOContentOptimizer:
             logger.error(f"Fatal error: {str(e)}", exc_info=True)
             print(f"\n\n❌ Fatal error: {str(e)}")
             sys.exit(1)
+    
+    def run_content_generation(self):
+        """
+        Run content generation workflow.
+        
+        This mode:
+        1. Reads headings from Excel output files
+        2. Generates AI content for each heading
+        3. Adds internal links based on sitemap
+        4. Exports to Excel, Word, and HTML
+        """
+        print_banner()
+        print("✍️  MODE: AI Content Generation")
+        
+        try:
+            # Step 1: Initialize AI Model Manager
+            print_section("AI Model Configuration", "1/6")
+            
+            model_manager = AIModelManager(config_path='config.yaml')
+            
+            # Test connections
+            model_manager.test_all_connections()
+            
+            # Ask if user wants to use default for all operations
+            use_default = model_manager.use_default_for_all()
+            
+            # Step 2: Select input Excel file from output directory
+            print_section("Select Input Excel File from Output Folder", "2/6")
+            print("📁 Reading files from: output/")
+            print("   (These are Excel files generated from content optimization mode)")
+            print()
+            
+            selected_files = self.file_selector.select_files_interactive(custom_dir="output")
+            
+            if not selected_files:
+                print("\n❌ No files selected. Exiting...")
+                print("\n💡 Tip: Run content optimization mode first to generate Excel files:")
+                print("   python3 main.py --mode content")
+                return
+            
+            excel_file = selected_files[0]  # Process first file
+            print(f"\n✅ Selected: {excel_file.name}")
+            
+            # Step 3: Get project information
+            print_section("Project Information", "3/6")
+            project_name = get_project_name_interactive()
+            
+            # Step 4: Select AI model for content generation
+            print_section("Select AI Model for Content Generation", "4/6")
+            
+            if use_default:
+                content_model = model_manager.get_default_model()
+                print(f"✅ Using default model: {content_model.name}")
+            else:
+                content_model = model_manager.select_model_interactive(
+                    purpose="Content Generation"
+                )
+            
+            if not content_model:
+                print("\n❌ No model selected. Exiting...")
+                return
+            
+            # Step 5: Read Excel and generate content row by row
+            print_section("Generate Content", "5/6")
+            
+            content_generator = ContentGenerator(self.config)
+            
+            # Read Excel with headers
+            df = content_generator.read_excel_with_headers(str(excel_file))
+            
+            print(f"📊 Found {len(df.columns)} columns:")
+            
+            # Categorize columns
+            topic_columns = []
+            heading_columns = []
+            other_columns = []
+            
+            for i, col in enumerate(df.columns):
+                if i == 0:  # First column is topic
+                    topic_columns.append((i+1, col))
+                elif "هدینگ H2" in str(col):
+                    heading_columns.append((i+1, col))
+                else:
+                    other_columns.append((i+1, col))
+            
+            # Display categorized columns
+            print(f"\n   📌 Topic Column:")
+            for idx, col in topic_columns:
+                print(f"      [{idx}] {col}")
+            
+            if other_columns:
+                print(f"\n   📋 Other Columns:")
+                for idx, col in other_columns:
+                    print(f"      [{idx}] {col}")
+            
+            print(f"\n   🎯 Heading Columns (H2):")
+            for idx, col in heading_columns:
+                print(f"      [{idx}] {col}")
+            
+            print(f"\n📝 Total articles to process: {len(df)}")
+            print(f"   📌 Topic from: Column 1")
+            print(f"   🎯 Headings from: {len(heading_columns)} H2 columns")
+            
+            # Confirm
+            confirm = input(f"\nStart generating content for {len(df)} article(s)? (Y/n): ").strip().lower()
+            if confirm in ['n', 'no']:
+                print("❌ Generation cancelled")
+                return
+            
+            # Process each row
+            generated_articles = []
+            
+            for idx, row in df.iterrows():
+                # Extract topic and headings
+                main_topic, headings = content_generator.extract_topic_and_headings(row)
+                
+                if not main_topic or not headings:
+                    print(f"\n⚠️  Row {idx + 1}: No topic or headings found, skipping")
+                    continue
+                
+                # Generate article interactively
+                article = content_generator.generate_article_interactive(
+                    row_index=idx,
+                    main_topic=main_topic,
+                    headings=headings,
+                    project_name=project_name,
+                    ai_model=content_model,
+                    total_rows=len(df)
+                )
+                
+                if article:
+                    generated_articles.append(article)
+            
+            if not generated_articles:
+                print("\n❌ No content generated")
+                return
+            
+            print(f"\n{'='*70}")
+            print(f"✅ Generated {len(generated_articles)} article(s)")
+            print(f"{'='*70}")
+            
+            # Step 6: Add internal links and export
+            print_section("Internal Linking & Export", "6/6")
+            
+            # Ask about internal linking
+            print(f"\n{'='*70}")
+            print(f"🔗 Internal Linking")
+            print(f"{'='*70}")
+            add_links = input("\nAdd internal links to content? (Y/n): ").strip().lower()
+            
+            linker = None
+            if add_links not in ['n', 'no']:
+                # Get sitemap
+                sitemap_url = self.sitemap_manager.get_sitemap_url_interactive()
+                sitemap_urls = self.sitemap_manager.download_and_parse_sitemap(sitemap_url)
+                
+                if sitemap_urls:
+                    print(f"\n✅ Loaded {len(sitemap_urls)} URLs from sitemap")
+                    
+                    # Initialize internal linker
+                    linker = InternalLinker(sitemap_urls)
+                    
+                    # Show statistics
+                    stats = linker.get_statistics()
+                    print(f"\n📊 URL Statistics:")
+                    for url_type, count in stats['by_type'].items():
+                        print(f"   - {url_type}: {count}")
+                    
+                    print(f"\n🔄 Adding internal links to articles...")
+                    
+                    # Add links to each article
+                    for article in generated_articles:
+                        linked_content = linker.add_internal_links(
+                            content_html=article['full_content'],
+                            max_links=None,
+                            words_per_link=(300, 400)
+                        )
+                        article['full_content'] = linked_content
+                    
+                    print(f"✅ Internal links added to {len(generated_articles)} article(s)")
+                else:
+                    print(f"\n⚠️  No URLs found in sitemap, skipping internal linking")
+            
+            # Export to Word and HTML
+            print(f"\n{'='*70}")
+            print(f"📄 Export to Word & HTML")
+            print(f"{'='*70}")
+            
+            export = input("\nExport content to Word and HTML files? (Y/n): ").strip().lower()
+            
+            word_files = []
+            html_files = []
+            
+            if export not in ['n', 'no']:
+                exporter = DocumentExporter(output_dir="output/documents")
+                
+                print(f"\n🔄 Exporting {len(generated_articles)} article(s)...")
+                
+                for i, article in enumerate(generated_articles, 1):
+                    # Clean topic for filename
+                    safe_topic = re.sub(r'[^\w\s-]', '', article['main_topic'])
+                    safe_topic = re.sub(r'[-\s]+', '-', safe_topic)[:50]
+                    filename = f"content_{project_name}_{i}_{safe_topic}"
+                    
+                    # Export to Word
+                    try:
+                        word_file = exporter.export_content_to_word(
+                            title=article['seo_title'],
+                            meta_description=article['meta_description'],
+                            content_html=article['full_content'],
+                            output_filename=filename
+                        )
+                        word_files.append(word_file)
+                    except Exception as e:
+                        logger.error(f"Word export failed for article {i}: {e}")
+                    
+                    # Export to HTML
+                    try:
+                        html_file = exporter.export_content_to_html(
+                            title=article['seo_title'],
+                            meta_description=article['meta_description'],
+                            content_html=article['full_content'],
+                            output_filename=filename
+                        )
+                        html_files.append(html_file)
+                    except Exception as e:
+                        logger.error(f"HTML export failed for article {i}: {e}")
+                
+                print(f"\n✅ Export complete!")
+                print(f"   📝 Word files: {len(word_files)}")
+                print(f"   🌐 HTML files: {len(html_files)}")
+            
+            # Calculate total words
+            total_words = sum(a['word_count'] for a in generated_articles)
+            
+            # Final summary
+            print_section("🎉 CONTENT GENERATION COMPLETED!")
+            print(f"📊 Statistics:")
+            print(f"   Total articles: {len(generated_articles)}")
+            print(f"   Total words generated: {total_words:,}")
+            print(f"\n📁 Output files:")
+            print(f"   Word documents: output/documents/")
+            print(f"   HTML files: output/documents/")
+            
+        except KeyboardInterrupt:
+            print("\n\n⚠️  Process interrupted by user")
+            logger.info("Content generation interrupted by user")
+            sys.exit(0)
+            
+        except Exception as e:
+            logger.error(f"Fatal error: {str(e)}", exc_info=True)
+            print(f"\n\n❌ Fatal error: {str(e)}")
+            sys.exit(1)
 
 
 def select_mode_interactive() -> str:
@@ -517,7 +775,7 @@ def select_mode_interactive() -> str:
     Interactive mode selection.
     
     Returns:
-        Selected mode: 'content' or 'scraping'
+        Selected mode: 'content', 'scraping', or 'generation'
     """
     print_banner()
     print("Please select operational mode:\n")
@@ -529,17 +787,24 @@ def select_mode_interactive() -> str:
     print("      Scrape page titles and meta tags from sitemap")
     print("      Input: Sitemap URL")
     print("      Output: Excel with SEO data for all pages\n")
+    print("  [3] AI Content Generation ✨ NEW")
+    print("      Generate SEO-optimized content with AI")
+    print("      Input: Excel file with headings")
+    print("      Output: Full content in Excel, Word, and HTML formats")
+    print("      Features: Multi-model AI, Internal linking, Export to multiple formats\n")
     print("-"*70)
     
     while True:
-        choice = input("Your selection (1 or 2): ").strip()
+        choice = input("Your selection (1, 2, or 3): ").strip()
         
         if choice == '1':
             return 'content'
         elif choice == '2':
             return 'scraping'
+        elif choice == '3':
+            return 'generation'
         else:
-            print("❌ Invalid choice. Please enter 1 or 2.")
+            print("❌ Invalid choice. Please enter 1, 2, or 3.")
 
 
 def main():
@@ -560,8 +825,8 @@ Examples:
     parser.add_argument(
         '--mode',
         type=str,
-        choices=['content', 'scraping'],
-        help='Operational mode: content (optimization) or scraping (SEO data collection)'
+        choices=['content', 'scraping', 'generation'],
+        help='Operational mode: content (optimization), scraping (SEO data collection), or generation (AI content generation)'
     )
     
     parser.add_argument(
@@ -608,6 +873,8 @@ Examples:
         optimizer.run_content_optimization(test_mode=args.test)
     elif mode == 'scraping':
         optimizer.run_seo_data_collection(test_mode=args.test)
+    elif mode == 'generation':
+        optimizer.run_content_generation()
 
 
 if __name__ == "__main__":

@@ -1,19 +1,22 @@
-# Feature Documentation - SEO Content Optimizer v2.0
+# Feature Documentation - SEO Content Optimizer v2.3.0
 
-Comprehensive guide to all features and capabilities.
+Comprehensive guide to all features and capabilities including AI Content Generation and Multi-Model Support.
 
 ---
 
 ## 📋 Table of Contents
 
 1. [Operational Modes](#operational-modes)
-2. [Interactive Features](#interactive-features)
-3. [Sitemap Management](#sitemap-management)
-4. [File Management](#file-management)
-5. [Test Mode](#test-mode)
-6. [AI Integration](#ai-integration)
-7. [Resume Capability](#resume-capability)
-8. [Progress Tracking](#progress-tracking)
+2. [AI Content Generation (NEW v2.3)](#ai-content-generation-new-v23)
+3. [Multi-Model AI Support (NEW v2.3)](#multi-model-ai-support-new-v23)
+4. [Smart Internal Linking (NEW v2.3)](#smart-internal-linking-new-v23)
+5. [Interactive Features](#interactive-features)
+6. [Sitemap Management](#sitemap-management)
+7. [File Management](#file-management)
+8. [Test Mode](#test-mode)
+9. [AI Integration](#ai-integration)
+10. [Resume Capability](#resume-capability)
+11. [Progress Tracking](#progress-tracking)
 
 ---
 
@@ -46,6 +49,293 @@ python3 main.py --mode content
 - Finding quick wins (positions 11-20)
 - Discovering content gaps
 - Generating data-driven content strategies
+
+---
+
+### Mode 3: AI Content Generation ✨ NEW v2.3
+
+**Purpose**: Generate complete SEO-optimized articles from content optimization suggestions.
+
+**Input**: Excel files from Mode 1 (Content Optimization)  
+**Output**: Complete articles in Word and HTML format with internal linking
+
+**Process**:
+1. Read Excel files from `output/` directory (from Mode 1 results)
+2. Extract main topic from first column
+3. Identify H2 heading columns (containing "هدینگ H2")
+4. Interactive word count distribution (total → per heading)
+5. Generate content for each heading using AI
+6. Create introduction and conclusion based on generated content
+7. Apply smart internal linking (max 1 link per 300-400 words)
+8. Export to Word (.docx) and HTML formats
+9. Update Excel with generated title and meta description
+
+**Command**:
+```bash
+python3 main.py --mode generation
+```
+
+**Features**:
+- Multi-AI model selection (Claude, GPT-4, Gemini, Groq, etc.)
+- Persian SEO-optimized content generation
+- Smart internal linking with semantic analysis
+- Word and HTML export with proper formatting
+- E-E-A-T principles integration
+- Interactive word count management
+
+**Use Cases**:
+- Converting content ideas into full articles
+- Scaling content production
+- Maintaining SEO best practices
+- Creating editor-ready content
+
+---
+
+## 🤖 AI Content Generation (NEW v2.3)
+
+### Complete Article Generation
+
+**Purpose**: Transform content optimization suggestions into full, SEO-optimized articles.
+
+**Input Flow**:
+```
+Excel (Mode 1) → Topic + Headings → Word Counts → AI Generation → Complete Article
+```
+
+**Content Structure**:
+1. **Introduction** (AI-generated based on headings)
+2. **Body Sections** (one per H2 heading)
+3. **Conclusion** (AI-generated based on content)
+4. **SEO Elements** (title, meta description)
+
+### Interactive Word Count Management
+
+**Feature**: Smart distribution of total word count across article sections.
+
+**How it Works**:
+```
+📝 Article 1 of 5
+======================================================================
+
+📌 Topic: راهنمای کاشت و نگهداری گلهای زیبا
+
+📋 Headings (5):
+   1. معرفی گل لیلیوم
+   2. نحوه کاشت گل همیشه بهار
+   3. نگهداری از گل سایه دوست
+   4. روشهای آبیاری بگونیا
+   5. (empty - will be skipped)
+
+📊 Enter total word count for this article (recommended: 2500-4000): 3000
+
+📝 Word count distribution:
+   Total words: 3000
+   Available for headings: 2600 (3000 - 200 intro - 200 conclusion)
+
+📝 Enter word count for each heading:
+
+   [1] معرفی گل لیلیوم: 650 words
+   [2] نحوه کاشت گل همیشه بهار: 650 words  
+   [3] نگهداری از گل سایه دوست: 650 words
+   [4] روشهای آبیاری بگونیا: 650 words
+   
+   ✅ Total: 2600 words (matches available)
+```
+
+**Features**:
+- Automatic calculation of available words
+- Validation that total matches target
+- Skip empty headings
+- Smart recommendations
+
+### Persian SEO Content Generation
+
+**Specialized Prompts**: Customized for Persian language SEO best practices.
+
+**Content Quality Features**:
+- E-E-A-T (Expertise, Experience, Authoritativeness, Trustworthiness)
+- Natural keyword integration
+- Readable formatting with proper spacing
+- Structured content with clear sections
+- Actionable information
+
+### Document Export System
+
+**Word Export (.docx)**:
+- Proper heading hierarchy (H1, H2, H3)
+- Bold text for emphasis
+- SEO metadata (title, description)
+- Professional formatting
+
+**HTML Export**:
+- Editor-ready HTML (no `<html>`, `<head>`, `<body>` tags)
+- Clean markup for CMS integration
+- Preserved formatting and structure
+- Internal links properly formatted
+
+---
+
+## 🔄 Multi-Model AI Support (NEW v2.3)
+
+### Supported AI Providers
+
+**Complete Provider List**:
+1. **OpenAI** (GPT-4, GPT-4o, GPT-4o-mini)
+2. **Anthropic** (Claude 3 Opus, Sonnet, Haiku)
+3. **Google** (Gemini Pro, Gemini Pro Vision)
+4. **Groq** (Llama 3, Mixtral)
+5. **OpenAI-Compatible** (Liara.ir, LM Studio, Ollama, etc.)
+
+### Model Selection Interface
+
+**Connection Testing**:
+```
+🔍 Testing AI model connections...
+
+✅ Connected Models:
+  [1] liara_gpt4o_mini (OpenAI Compatible - Liara)
+  [2] claude_sonnet (Anthropic - Claude 3.5 Sonnet)
+  [3] gemini_pro (Google - Gemini Pro)
+
+❌ Failed Models:
+  - openai_gpt4 (Invalid API key)
+  - groq_llama3 (Connection timeout)
+
+🤖 Default model: liara_gpt4o_mini
+```
+
+**Per-Operation Selection**:
+```
+📝 Content Generation - Model Selection
+
+Choose AI model for this operation:
+  [1] Use default (liara_gpt4o_mini)
+  [2] claude_sonnet - Best for creative content
+  [3] gemini_pro - Good for technical content
+  [4] Select different model for each section
+
+Your choice: 4
+
+📝 Introduction generation - Choose model:
+  [1] liara_gpt4o_mini
+  [2] claude_sonnet  
+  [3] gemini_pro
+
+Your choice: 2
+```
+
+### Configuration Management
+
+**Flexible API Key Management**:
+```yaml
+# Direct keys
+liara_gpt4o_mini:
+  api_key: "sk-your-actual-key"
+
+# Environment variables  
+claude_sonnet:
+  api_key: "env:ANTHROPIC_API_KEY"
+
+# Multiple models per provider
+openai_gpt4:
+  provider: "openai"
+  api_key: "env:OPENAI_API_KEY"
+  model: "gpt-4"
+  
+openai_gpt4o:
+  provider: "openai" 
+  api_key: "env:OPENAI_API_KEY"
+  model: "gpt-4o"
+```
+
+### Model-Specific Optimization
+
+**Provider-Specific Features**:
+- **OpenAI**: JSON mode, function calling
+- **Anthropic**: Structured output, longer context
+- **Gemini**: Multimodal capabilities, fast responses
+- **Groq**: High-speed inference, cost-effective
+
+---
+
+## 🔗 Smart Internal Linking (NEW v2.3)
+
+### Intelligent Link Placement
+
+**Core Rules**:
+1. **Frequency**: Maximum 1 link per 300-400 words
+2. **Placement**: Never within headings (H1, H2, H3)
+3. **Priority**: Categories > Products > Blog posts
+4. **Distribution**: Mix content types across article
+5. **Anchor Text**: Exact match preferred, closest phrase (max 5 syllables) as fallback
+
+### Sitemap Analysis
+
+**URL Categorization**:
+```
+📊 Analyzing sitemap for internal linking...
+
+✅ Found 1,247 URLs:
+   📁 Categories: 45 URLs
+   🛍️ Products: 892 URLs  
+   📝 Blog Posts: 310 URLs
+
+🔗 Internal linking candidates: 1,247 URLs
+```
+
+**Smart URL Classification**:
+- **Categories**: `/category/`, `/categories/`, `/shop/category/`
+- **Products**: `/product/`, `/products/`, `/shop/product/`, `/item/`
+- **Blog Posts**: `/blog/`, `/post/`, `/article/`, `/news/`
+
+### Semantic Content Matching
+
+**AI-Powered Relevance**:
+```
+📝 Generating content for: "معرفی گل لیلیوم"
+
+🔍 Analyzing content for internal linking...
+
+📊 Semantic analysis results:
+   Best match: "گل لیلیوم سفید" (product)
+   Relevance: 95%
+   Anchor text: "گل لیلیوم سفید"
+   
+   Alternative: "گل‌های زینتی" (category)  
+   Relevance: 87%
+   Anchor text: "گل‌های زینتی"
+```
+
+**Matching Process**:
+1. Extract key concepts from paragraph
+2. Compare with URL titles/descriptions
+3. Calculate semantic similarity
+4. Select best match with proper anchor text
+5. Ensure no duplicate links in same article
+
+### Link Distribution Strategy
+
+**Balanced Approach**:
+```
+📊 Link distribution for 3000-word article:
+   📁 Category links: 2 (33%)
+   🛍️ Product links: 2 (33%)  
+   📝 Blog links: 2 (33%)
+   
+   📍 Placement:
+   - Paragraph 2: [گل‌های زینتی](category)
+   - Paragraph 4: [گل لیلیوم سفید](product)
+   - Paragraph 6: [راهنمای کاشت گل](blog)
+   - Paragraph 8: [بذر گل](category)
+   - Paragraph 10: [کود مخصوص گل](product)
+   - Paragraph 12: [نحوه آبیاری گل‌ها](blog)
+```
+
+**Quality Assurance**:
+- No more than 2 links to same page
+- Diverse anchor text
+- Natural placement within content
+- Contextually relevant links only
 
 ---
 

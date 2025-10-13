@@ -1,15 +1,39 @@
-# SEO Content Analysis & Optimization Tool v2.2.3
+# SEO Content Analysis & Optimization Tool v2.3.0
 
 A powerful, interactive Python application optimized for **Persian/Farsi content** that helps you improve your website's SEO through:
 1. **Content Optimization**: Analyze Google Search Console data with Persian-aware AI
 2. **SEO Data Collection**: Scrape and audit page titles, meta descriptions, and SEO tags
-3. **Knowledge Base**: Track content history and avoid duplicates
+3. **AI Content Generation** ✨ NEW: Generate SEO-optimized content with multi-model AI support
+4. **Internal Linking**: Smart internal linking with semantic analysis
+5. **Knowledge Base**: Track content history and avoid duplicates
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Persian Optimized](https://img.shields.io/badge/Persian-Optimized-green.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
+
+## 🆕 What's New in v2.3.0
+
+### AI Content Generation ✨ NEW
+- ✅ **Multi-Model AI Support**: Choose from OpenAI, Claude, Gemini, Groq, and more
+- ✅ **Persian SEO Content**: Specialized prompts for natural, SEO-optimized Persian content
+- ✅ **Smart Internal Linking**: Automatic internal links based on sitemap analysis
+- ✅ **Multiple Export Formats**: Excel, Word (.docx), and editor-ready HTML
+- ✅ **Model Selection**: Pick different AI models for different operations
+- ✅ **Connection Testing**: Test all AI models before use
+
+### Multi-Model AI Configuration
+- ✅ **Configure Multiple Models**: Set up multiple AI providers in one config file
+- ✅ **Default Model**: Set a default model for all operations
+- ✅ **Per-Operation Selection**: Choose specific models for specific tasks
+- ✅ **Supported Providers**: OpenAI, Claude (Anthropic), Gemini (Google), Groq, and OpenAI-compatible APIs
+
+### Internal Linking System
+- ✅ **Semantic Matching**: Links based on content relevance
+- ✅ **Smart Rules**: 1 link per 300-400 words, no links in headings
+- ✅ **Priority System**: Categories > Products > Blog posts
+- ✅ **Anchor Text Optimization**: Natural anchor text with 5-syllable limit
 
 ## 🆕 What's New in v2.2.3
 
@@ -53,14 +77,20 @@ A powerful, interactive Python application optimized for **Persian/Farsi content
   - [Features](#features)
   - [Installation](#installation)
   - [Usage](#usage)
-  - [Modes](#modes)
+  - [Mode 1: Content Optimization](#mode-1-content-optimization)
+  - [Mode 2: SEO Data Collection](#mode-2-seo-data-collection)
+  - [Mode 3: AI Content Generation](#mode-3-ai-content-generation-new)
+  - [Multi-Model AI Configuration](#multi-model-ai-configuration)
   - [Troubleshooting](#troubleshooting)
 - [مستندات فارسی](#مستندات-فارسی)
   - [شروع سریع](#شروع-سریع)
   - [ویژگی‌ها](#ویژگیها)
   - [نصب](#نصب)
   - [استفاده](#استفاده)
-  - [حالت‌های اجرا](#حالتهای-اجرا)
+  - [حالت ۱: بهینه‌سازی محتوا](#حالت-۱-بهینهسازی-محتوا-فارسی-بهینهشده-)
+  - [حالت ۲: جمع‌آوری داده‌های SEO](#حالت-۲-جمعآوری-دادههای-seo)
+  - [حالت ۳: تولید محتوای هوشمند](#حالت-۳-تولید-محتوای-هوشمند-جدید)
+  - [پیکربندی چند مدل AI](#پیکربندی-چند-مدل-ai)
   - [رفع مشکلات](#رفع-مشکلات)
 
 ---
@@ -99,6 +129,9 @@ python3 main.py --mode content
 # SEO data collection mode
 python3 main.py --mode scraping
 
+# AI Content Generation mode ✨ NEW
+python3 main.py --mode generation
+
 # Test mode (10 items only)
 python3 main.py --mode content --test
 ```
@@ -108,6 +141,7 @@ python3 main.py --mode content --test
 ## 🎯 Features
 
 ### Mode 1: Content Optimization (Persian-Optimized)
+Analyze existing content and find new opportunities
 - **Search Console Analysis**: Load and analyze Google Search Console exports
 - **Persian-Aware AI**: Specialized analysis for Farsi content and Iranian users
 - **LSI Keywords**: Persian-specific related keywords (کلیدواژه‌های مرتبط فارسی)
@@ -287,6 +321,266 @@ Scraping pages: 100%|███████████| 10/10
 
 ---
 
+### Mode 3: AI Content Generation ✨ NEW
+
+**Purpose**: Generate SEO-optimized Persian content with AI using multiple models and automatic internal linking.
+
+**Workflow**:
+1. Run: `python3 main.py --mode generation`
+2. System tests all configured AI models
+3. Choose to use default model or select per operation
+4. **Select Excel file from `output/` folder** (files generated from Mode 1)
+5. Enter project name
+6. Select AI model for content generation
+7. **For each article row**:
+   - System shows topic from first column
+   - Shows all headings from other columns
+   - Ask for confirmation
+   - Ask for total word count for entire article
+   - Ask for word count per heading
+   - Generate content for each heading
+   - Generate introduction and conclusion
+   - Combine into complete article
+8. Optionally add internal links based on sitemap
+9. Export to Word and HTML formats
+
+**Note**: 
+- Excel files are read from the `output/` folder (files generated by Mode 1)
+- First row is treated as headers
+- **Column 1**: Article topic (automatically used)
+- **Columns 2-6**: Additional data (predictions, clusters, content type, search intent, word count)
+- **Columns 7+**: H2 headings (only these are used for content generation)
+- Each row represents one complete article
+
+**Excel Structure Example**:
+| عنوان پیشنهادی مقاله | پیش‌بینی نمایش | کلاستر کلیدواژه | نوع محتوا | هدف جستجو | تعداد کلمات | هدینگ H2 شماره 1 | هدینگ H2 شماره 2 | ... |
+|---------------------|-------------|-------------|---------|---------|-----------|-----------------|-----------------|-----|
+| راهنمای کاشت گلها | 1500 | کاشت | راهنما | اطلاعاتی | 2000 | معرفی گل لیلیوم | نحوه کاشت | ... |
+
+**Key Features**:
+- **Multi-Model AI Support**: Choose from OpenAI, Claude, Gemini, Groq, and more
+- **Persian SEO Optimization**: Content follows Persian SEO best practices
+- **Smart Internal Linking**: 
+  - 1 link per 300-400 words
+  - No links in headings
+  - Priority: Categories > Products > Blog posts
+  - Semantic anchor text matching (max 5 syllables)
+- **Multiple Export Formats**:
+  - Excel: With SEO title, meta description, and content
+  - Word: Formatted documents with headings and bold text
+  - HTML: Editor-ready (no `<html>`, `<head>`, `<body>` tags)
+
+**Generated Content Includes**:
+- SEO-optimized title (max 60 characters)
+- Meta description (max 160 characters)
+- Full HTML content with proper structure (H2, H3, paragraphs, lists)
+- Natural Persian writing with E-E-A-T principles
+- Random spacing variations for natural appearance
+
+**Example**:
+```bash
+$ python3 main.py --mode generation
+
+🚀 SEO CONTENT ANALYSIS & OPTIMIZATION TOOL
+============================================
+Version: 2.3.0 | Multi-Model AI + Content Generation + Internal Linking
+
+[1/6] AI Model Configuration
+======================================================================
+
+🔌 Testing AI model connections...
+----------------------------------------------------------------------
+   Testing liara_gpt4o_mini (openai_compatible)... ✅ Connected
+      (Default model)
+   Testing claude_sonnet (anthropic)... ✅ Connected
+   Testing gemini_pro (gemini)... ✅ Connected
+----------------------------------------------------------------------
+
+✅ 3/3 model(s) connected successfully
+
+🤖 AI Model Selection
+======================================================================
+
+Default model: liara_gpt4o_mini (openai_compatible)
+
+Would you like to use the default model for all operations?
+  [Y] Yes, use default for everything
+  [N] No, let me choose for each operation
+
+Your choice (Y/n): Y
+✅ Will use liara_gpt4o_mini for all operations
+
+[2/6] Select Input Excel File
+======================================================================
+
+📊 FOUND 2 EXCEL FILE(S)
+  [1] new_content_nazboo-blog.xlsx (45.2 KB | 2025-10-12)
+  [2] improvements_nazboo-blog.xlsx (38.7 KB | 2025-10-12)
+
+Your selection: 1
+✅ Selected: new_content_nazboo-blog.xlsx
+
+[3/6] Project Information
+======================================================================
+
+📋 PROJECT IDENTIFICATION
+Enter a name for this project: nazboo.com
+✅ Project name: nazboo.com
+
+📝 Enter main topic/theme for content:
+   Main topic: کشاورزی و باغبانی
+
+[4/6] Select AI Model for Content Generation
+======================================================================
+✅ Using default model: liara_gpt4o_mini
+
+[5/6] Generate Content
+======================================================================
+
+📝 Content Generation Settings
+======================================================================
+
+Enter approximate word count per heading: 800
+✅ Target word count: 800 words per heading
+
+📊 Found 3 heading column(s):
+   - عنوان اصلی
+   - H2_1
+   - H2_2
+
+Generate content for 15 row(s)? (y/n): y
+
+======================================================================
+🚀 Starting Content Generation
+======================================================================
+
+Generating content: 100%|████████████████| 15/15
+
+======================================================================
+✅ Content Generation Complete!
+======================================================================
+   Total rows: 15
+   ✅ Success: 15
+   ❌ Failed: 0
+   📊 Total words generated: 12,340
+   📁 Output: output/content_generated/content_nazboo-blog.xlsx
+======================================================================
+
+[6/6] Internal Linking & Export
+======================================================================
+
+🔗 Internal Linking
+======================================================================
+
+Add internal links to content? (Y/n): y
+
+🗺️  SITEMAP CONFIGURATION
+Enter your sitemap URL: https://nazboo.com/sitemap.xml
+
+📥 Downloading sitemap...
+✅ Extracted 450 URLs
+
+📊 URL Statistics:
+   - category: 25
+   - product: 320
+   - blog: 85
+   - other: 20
+
+🔄 Adding internal links...
+Adding links: 100%|████████████████| 15/15
+
+✅ Internal links added and saved to Excel
+
+======================================================================
+📄 Export to Word & HTML
+======================================================================
+
+Export content to Word and HTML files? (Y/n): y
+
+Exporting files: 100%|████████████████| 15/15
+
+======================================================================
+✅ Export Complete!
+======================================================================
+   📝 Word files: 15
+   🌐 HTML files: 15
+   📁 Output directory: /path/to/output/documents
+======================================================================
+
+======================================================================
+🎉 CONTENT GENERATION COMPLETED!
+======================================================================
+📊 Statistics:
+   Total content pieces: 15
+   Total words generated: 12,340
+   Failed: 0
+
+📁 Output files:
+   Excel: output/content_generated/content_nazboo-blog.xlsx
+   Documents: output/documents/
+```
+
+**Output Files Structure**:
+```
+output/
+├── content_generated/
+│   └── content_nazboo-blog.xlsx          # Excel with all content
+└── documents/
+    ├── content_nazboo.com_1_title.docx   # Word documents
+    ├── content_nazboo.com_1_title.html   # HTML files
+    ├── content_nazboo.com_2_title.docx
+    ├── content_nazboo.com_2_title.html
+    └── ...
+```
+
+**Excel Output Columns**:
+- Original columns from input file
+- `SEO_Title`: Optimized title (60 chars)
+- `Meta_Description`: Meta description (160 chars)
+- `Generated_Content`: Full HTML content with internal links
+
+**Word Document Structure**:
+```
+SEO Information
+---------------
+Title: [SEO Title]
+Meta Description: [Meta Description]
+
+___________________________________________________________
+
+Content
+-------
+[Full formatted content with headings, bold text, lists, etc.]
+```
+
+**HTML Output** (Editor-Ready):
+```html
+<!-- SEO Title -->
+<!-- بهترین روش‌های کاشت گوجه فرنگی در باغ خانگی -->
+
+<!-- Meta Description -->
+<!-- راهنمای کامل کاشت و پرورش گوجه فرنگی با نکات کاربردی برای باغبانان خانگی. -->
+
+<!-- Content Start -->
+<h2>مقدمه</h2>
+<p>گوجه فرنگی یکی از محبوب‌ترین سبزیجاتی است که...</p>
+
+<h2>انتخاب بذر مناسب</h2>
+<p>برای کاشت گوجه فرنگی، انتخاب <strong>بذر با کیفیت</strong> اهمیت زیادی دارد...</p>
+<p>می‌توانید از <a href="https://nazboo.com/product-category/seeds/">بذرهای باکیفیت</a> استفاده کنید.</p>
+
+<h3>انواع بذر گوجه فرنگی</h3>
+<ul>
+  <li>گوجه فرنگی رقم قدیما</li>
+  <li><a href="https://nazboo.com/product/tomato-seed-superb/">بذر گوجه فرنگی سوپرب</a></li>
+  <li>گوجه فرنگی گیلاسی</li>
+</ul>
+...
+<!-- Content End -->
+```
+
+---
+
 ### Test Mode
 
 Test mode limits processing to 10 items for quick validation:
@@ -309,7 +603,98 @@ python3 main.py --mode scraping --test
 
 ## ⚙️ Configuration
 
-### AI Provider Setup
+### Multi-Model AI Configuration ✨ NEW
+
+Starting from v2.3.0, you can configure multiple AI models and choose which one to use for each operation.
+
+**Configuration in `config.yaml`**:
+
+```yaml
+# Multi-Model AI Configuration
+ai_models:
+  # Set default model
+  default: "liara_gpt4o_mini"
+  
+  # Configure multiple models
+  liara_gpt4o_mini:
+    provider: "openai_compatible"
+    api_key: "your-liara-api-key"
+    base_url: "https://ai.liara.ir/api/YOUR_PROJECT/v1"
+    model: "openai/gpt-4o-mini"
+    
+  openai_gpt4:
+    provider: "openai"
+    api_key: "env:OPENAI_API_KEY"  # Read from environment variable
+    base_url: "https://api.openai.com/v1"
+    model: "gpt-4"
+  
+  claude_sonnet:
+    provider: "anthropic"
+    api_key: "env:ANTHROPIC_API_KEY"
+    model: "claude-3-5-sonnet-20241022"
+  
+  gemini_pro:
+    provider: "gemini"
+    api_key: "env:GOOGLE_API_KEY"
+    model: "gemini-pro"
+  
+  groq_llama3_70b:
+    provider: "groq"
+    api_key: "env:GROQ_API_KEY"
+    model: "llama3-70b-8192"
+```
+
+**Supported Providers**:
+
+| Provider | Type | Models | Configuration |
+|----------|------|--------|---------------|
+| **OpenAI** | `openai` | GPT-4, GPT-4o, GPT-3.5 | `api_key`, `base_url`, `model` |
+| **Claude** | `anthropic` | Claude 3 (Opus, Sonnet, Haiku) | `api_key`, `model` |
+| **Gemini** | `gemini` | Gemini Pro, Gemini Pro Vision | `api_key`, `model` |
+| **Groq** | `groq` | Llama 3, Mixtral | `api_key`, `model` |
+| **Liara.ir** | `openai_compatible` | Any OpenAI-compatible | `api_key`, `base_url`, `model` |
+| **Custom** | `openai_compatible` | Any OpenAI-compatible API | `api_key`, `base_url`, `model` |
+
+**Environment Variables**:
+You can use `env:VARIABLE_NAME` to read API keys from environment variables:
+
+```bash
+# Set environment variables
+export OPENAI_API_KEY="sk-your-openai-key"
+export ANTHROPIC_API_KEY="sk-ant-your-claude-key"
+export GOOGLE_API_KEY="your-google-api-key"
+export GROQ_API_KEY="gsk_your-groq-key"
+
+# Run the tool
+python3 main.py --mode generation
+```
+
+**Model Selection Flow**:
+1. At startup, system tests all configured models
+2. User chooses: "Use default for all" or "Select per operation"
+3. If "Select per operation", system prompts for model selection when needed
+4. Only connected models are shown in selection
+
+**Example Model Selection**:
+```bash
+🤖 Select AI Model for: Content Generation
+======================================================================
+
+  [1] liara_gpt4o_mini (openai_compatible) [DEFAULT]
+  [2] claude_sonnet (anthropic)
+  [3] gemini_pro (gemini)
+
+  [0] Use default model (liara_gpt4o_mini)
+
+----------------------------------------------------------------------
+
+Your selection: 2
+✅ Selected: claude_sonnet
+```
+
+---
+
+### Legacy AI Provider Setup (v2.2.3 and earlier)
 
 **OpenAI**:
 ```yaml
@@ -415,6 +800,26 @@ python3 main.py --mode content
 # 4. Track rankings in 30 days
 ```
 
+### Workflow 4: AI Content Generation with Internal Linking ✨ NEW
+```bash
+# 1. Analyze Search Console and get content ideas
+python3 main.py --mode content
+
+# 2. Generate full content with AI
+python3 main.py --mode generation
+#    - Select the new_content_*.xlsx file
+#    - Choose AI model (Claude, GPT-4, Gemini, etc.)
+#    - Set word count per article (e.g., 800 words)
+#    - Enable internal linking with sitemap
+
+# 3. Review generated content in:
+#    - Excel: output/content_generated/
+#    - Word docs: output/documents/
+#    - HTML files: output/documents/
+
+# 4. Publish content and track results
+```
+
 ---
 
 # مستندات فارسی
@@ -450,6 +855,9 @@ python3 main.py --mode content
 
 # حالت جمع‌آوری داده‌های SEO
 python3 main.py --mode scraping
+
+# حالت تولید محتوای هوشمند ✨ جدید
+python3 main.py --mode generation
 
 # حالت تست (۱۰ آیتم)
 python3 main.py --mode content --test
@@ -604,6 +1012,142 @@ SEOContentAnalysis/
 - Canonical URL
 - تگ‌های Open Graph
 - تگ‌های Twitter Card
+
+---
+
+### حالت ۳: تولید محتوای هوشمند ✨ جدید
+
+**هدف**: تولید محتوای SEO بهینه‌شده فارسی با هوش مصنوعی، پشتیبانی از چند مدل و لینک‌دهی داخلی خودکار.
+
+**ویژگی‌های کلیدی**:
+- **پشتیبانی چند مدل AI**: انتخاب از بین OpenAI، Claude، Gemini، Groq و غیره
+- **بهینه‌سازی SEO فارسی**: محتوا با رعایت اصول SEO فارسی
+- **لینک‌دهی داخلی هوشمند**:
+  - ۱ لینک به ازای هر ۳۰۰-۴۰۰ کلمه
+  - عدم لینک در هدینگ‌ها
+  - اولویت: دسته‌بندی‌ها > محصولات > مقالات
+  - انکر تکست سمنتیک (حداکثر ۵ هجا)
+- **خروجی چندگانه**:
+  - اکسل: با عنوان SEO، متا دیسکریپشن و محتوا
+  - Word: اسناد فرمت‌بندی شده
+  - HTML: آماده برای ادیتور (بدون تگ‌های پایه)
+
+**محتوای تولید شده شامل**:
+- عنوان بهینه‌شده SEO (حداکثر ۶۰ کاراکتر)
+- متا دیسکریپشن (حداکثر ۱۶۰ کاراکتر)
+- محتوای کامل HTML با ساختار مناسب (H2, H3, پاراگراف، لیست)
+- نگارش طبیعی فارسی با اصول E-E-A-T
+- تنوع در فاصله‌گذاری برای طبیعی‌تر بودن
+
+**مراحل اجرا**:
+1. اجرا: `python3 main.py --mode generation`
+2. سیستم تمام مدل‌های AI پیکربندی شده را تست می‌کند
+3. انتخاب استفاده از مدل پیش‌فرض یا انتخاب دستی
+4. **انتخاب فایل اکسل از پوشه `output/`** (فایل‌های تولید شده از حالت ۱)
+5. وارد کردن نام پروژه
+6. انتخاب مدل AI برای تولید محتوا
+7. **برای هر ردیف مقاله**:
+   - سیستم موضوع را از ستون اول نمایش می‌دهد
+   - تمام هدینگ‌ها از ستون‌های دیگر نمایش داده می‌شود
+   - درخواست تایید
+   - پرسش تعداد کلمات کل مقاله
+   - پرسش تعداد کلمات برای هر هدینگ
+   - تولید محتوا برای هر هدینگ
+   - تولید مقدمه و نتیجه‌گیری
+   - ترکیب در یک مقاله کامل
+8. اضافه کردن لینک‌های داخلی بر اساس sitemap (اختیاری)
+9. خروجی به فرمت‌های Word و HTML
+
+**توجه**: 
+- فایل‌های اکسل از پوشه `output/` خوانده می‌شوند (خروجی حالت ۱)
+- ردیف اول به عنوان سرستون در نظر گرفته می‌شود
+- **ستون ۱**: موضوع مقاله (خودکار استفاده می‌شود)
+- **ستون‌های ۲-۶**: داده‌های اضافی (پیش‌بینی، کلاستر، نوع محتوا، هدف جستجو، تعداد کلمات)
+- **ستون‌های ۷+**: هدینگ‌های H2 (فقط این‌ها برای تولید محتوا استفاده می‌شوند)
+- هر ردیف یک مقاله کامل است
+
+**مثال ساختار اکسل**:
+| عنوان پیشنهادی مقاله | پیش‌بینی نمایش | کلاستر کلیدواژه | نوع محتوا | هدف جستجو | تعداد کلمات | هدینگ H2 شماره 1 | هدینگ H2 شماره 2 | ... |
+|---------------------|-------------|-------------|---------|---------|-----------|-----------------|-----------------|-----|
+| راهنمای کاشت گلها | 1500 | کاشت | راهنما | اطلاعاتی | 2000 | معرفی گل لیلیوم | نحوه کاشت | ... |
+
+**مثال خروجی اکسل**:
+
+| عنوان اصلی | H2_1 | H2_2 | SEO_Title | Meta_Description | Generated_Content |
+|-----------|------|------|-----------|-----------------|-------------------|
+| راهنمای کاشت گوجه فرنگی | انتخاب بذر | آماده‌سازی خاک | بهترین روش‌های کاشت گوجه فرنگی... | راهنمای کامل کاشت و پرورش... | `<h2>مقدمه</h2><p>...</p>...` |
+
+**ساختار اسناد Word**:
+```
+اطلاعات SEO
+-----------
+عنوان: بهترین روش‌های کاشت گوجه فرنگی در باغ خانگی
+متا دیسکریپشن: راهنمای کامل کاشت و پرورش گوجه فرنگی با نکات کاربردی...
+
+___________________________________________________________
+
+محتوا
+-----
+[محتوای کامل با فرمت‌بندی، هدینگ‌ها، متن‌های بولد و غیره]
+```
+
+**خروجی HTML** (آماده برای ادیتور):
+```html
+<!-- SEO Title -->
+<!-- بهترین روش‌های کاشت گوجه فرنگی در باغ خانگی -->
+
+<!-- Meta Description -->
+<!-- راهنمای کامل کاشت و پرورش گوجه فرنگی با نکات کاربردی -->
+
+<!-- Content Start -->
+<h2>مقدمه</h2>
+<p>گوجه فرنگی یکی از محبوب‌ترین سبزیجات...</p>
+
+<h2>انتخاب بذر مناسب</h2>
+<p>برای کاشت موفق، <strong>انتخاب بذر باکیفیت</strong> ضروری است...</p>
+<p>می‌توانید از <a href="https://example.com/category/seeds/">بذرهای باکیفیت</a> استفاده کنید.</p>
+...
+<!-- Content End -->
+```
+
+---
+
+### پیکربندی چند مدل AI
+
+از نسخه v2.3.0، می‌توانید چندین مدل AI را پیکربندی کرده و برای هر عملیات یکی را انتخاب کنید.
+
+**پیکربندی در `config.yaml`**:
+
+```yaml
+ai_models:
+  # مدل پیش‌فرض
+  default: "liara_gpt4o_mini"
+  
+  # پیکربندی چند مدل
+  liara_gpt4o_mini:
+    provider: "openai_compatible"
+    api_key: "کلید-API-لیارا"
+    base_url: "https://ai.liara.ir/api/پروژه/v1"
+    model: "openai/gpt-4o-mini"
+    
+  claude_sonnet:
+    provider: "anthropic"
+    api_key: "env:ANTHROPIC_API_KEY"
+    model: "claude-3-5-sonnet-20241022"
+  
+  gemini_pro:
+    provider: "gemini"
+    api_key: "env:GOOGLE_API_KEY"
+    model: "gemini-pro"
+```
+
+**تنظیم متغیرهای محیطی**:
+```bash
+export OPENAI_API_KEY="کلید-OpenAI"
+export ANTHROPIC_API_KEY="کلید-Claude"
+export GOOGLE_API_KEY="کلید-Google"
+export GROQ_API_KEY="کلید-Groq"
+```
 
 ---
 

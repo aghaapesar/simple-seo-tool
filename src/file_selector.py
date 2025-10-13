@@ -93,15 +93,28 @@ class FileSelector:
         """
         return dt.strftime("%Y-%m-%d %H:%M")
     
-    def select_files_interactive(self) -> List[Path]:
+    def select_files_interactive(self, custom_dir: str = None) -> List[Path]:
         """
         Interactive file selection interface.
+        
+        Args:
+            custom_dir: Optional custom directory to search (overrides self.input_dir)
         
         Returns:
             List of selected file paths
         """
+        # Use custom directory if provided
+        if custom_dir:
+            original_dir = self.input_dir
+            self.input_dir = Path(custom_dir)
+            self.input_dir.mkdir(exist_ok=True)
+        
         # Get available files
         files = self._get_excel_files()
+        
+        # Restore original directory if custom was used
+        if custom_dir:
+            self.input_dir = original_dir
         
         if not files:
             print("\n" + "="*60)
