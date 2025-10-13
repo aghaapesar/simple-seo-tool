@@ -877,7 +877,7 @@ class SEOContentOptimizer:
             print(f"\n✅ Loaded {len(linker.urls)} URLs from sitemap")
             stats = linker.get_statistics()
             print(f"📊 URL Statistics:")
-            for url_type, count in stats['url_types'].items():
+            for url_type, count in stats['by_type'].items():
                 print(f"   - {url_type}: {count}")
             
             # Step 4: Process files
