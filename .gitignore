@@ -50,6 +50,8 @@ sitemaps/
 # Output files
 output/
 !output/.gitkeep
+!output/content_generated/.gitkeep
+!output/documents/.gitkeep
 
 # Excel files (anywhere in project)
 *.xlsx
