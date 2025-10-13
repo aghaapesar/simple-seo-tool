@@ -505,11 +505,27 @@ class InternalLinker:
         
         # Replace first occurrence of anchor text that's not already in a link
         # Use word boundaries to avoid partial matches
-        # Make sure we're not replacing text that's already inside an <a> tag
-        pattern = r'(?<!</?a[^>]*>)\b' + re.escape(anchor_text) + r'\b(?![^<]*</a>)'
-        modified_html = re.sub(pattern, link_html, section_html, count=1, flags=re.IGNORECASE)
+        pattern = r'\b' + re.escape(anchor_text) + r'\b'
         
-        return modified_html
+        # Check if anchor text is already inside an <a> tag
+        # Split by anchor text and check if previous part ends with unclosed <a> tag
+        parts = re.split(pattern, section_html, maxsplit=1, flags=re.IGNORECASE)
+        if len(parts) > 1:
+            # Check if we're inside an <a> tag
+            before_text = parts[0]
+            # Count opening and closing <a> tags before our text
+            open_tags = before_text.count('<a ')
+            close_tags = before_text.count('</a>')
+            
+            # If we're inside an <a> tag (more opens than closes), don't replace
+            if open_tags > close_tags:
+                return section_html
+            
+            # Replace the first occurrence
+            modified_html = parts[0] + link_html + ''.join(parts[1:])
+            return modified_html
+        
+        return section_html
     
     def _find_best_anchor_text(
         self,
