@@ -2,6 +2,58 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.4.0 (2024-10-13)
+
+### ✨ New Mode 5: Keyword Synonym Finder 🔍
+
+**Major Feature:**
+- Find all semantic equivalents for keywords using AI
+- Support for 8 categories of variations:
+  1. Persian synonyms (مترادف‌های فارسی)
+  2. Finglish standard (گوشی → gooshi, gushi)
+  3. English keyboard typing (گوشی → ',ad)
+  4. Colloquial abbreviations (اختصارات عامیانه)
+  5. Common misspellings (غلط‌های املایی رایج)
+  6. English equivalents (معادل انگلیسی)
+  7. Abbreviations (مخفف‌ها)
+  8. Related terms (واژگان مرتبط)
+
+**How it Works:**
+- Read keywords from Excel file (column 1)
+- AI generates all possible variations
+- Output Excel with 9 columns (original + 8 variation types)
+- Comprehensive keyword coverage for SEO
+
+**Use Cases:**
+- Optimize content for all search variations
+- Cover different ways users might search
+- Improve keyword coverage
+- Content localization and variations
+
+### 📝 Content Generation Improvements
+
+**Enhanced Prompts:**
+- Stronger emphasis on NO conclusion per heading
+- Clear instruction that conclusion comes ONLY at end
+- Prevent phrases like "در نتیجه", "خلاصه" in section endings
+- Added <p> tag instruction for clean HTML
+- Improved conclusion prompt for comprehensive summary
+
+**Result:**
+- Clean, flowing content without multiple conclusions
+- Single comprehensive conclusion at article end
+- Better HTML rendering in browser
+
+### 🔗 Internal Linking Improvements
+
+**Duplicate Link Prevention:**
+- Added final cleanup pass to remove duplicate URL links
+- Keeps only first occurrence of each URL
+- Replaces duplicate links with plain anchor text
+- Better protection against same URL with different anchor texts
+
+---
+
 ## v2.3.3 (2024-10-13)
 
 ### Added

@@ -37,7 +37,7 @@ from src.knowledge_base import KnowledgeBase
 from src.ai_model_manager import AIModelManager
 from src.content_generator import ContentGenerator
 from src.document_exporter import DocumentExporter
-from src.internal_linker import InternalLinker
+from src.synonym_finder import SynonymFinder
 
 
 # Configure logging with detailed format
@@ -937,6 +937,87 @@ class SEOContentOptimizer:
             logger.error(f"Fatal error in internal linking mode: {e}")
             print(f"\n❌ Fatal error: {e}")
             raise
+    
+    def run_synonym_finder(self):
+        """
+        Mode 5: Find semantic equivalents for keywords.
+        
+        This mode reads keywords from Excel and finds all possible variations including:
+        Persian synonyms, Finglish, keyboard typing, misspellings, etc.
+        """
+        print_banner()
+        print("🔍 MODE: Keyword Synonym Finder")
+        
+        try:
+            # Step 1: Initialize AI Model Manager
+            print_section("AI Model Configuration", "1/4")
+            
+            model_manager = AIModelManager(config_path='config.yaml')
+            
+            # Test connections
+            model_manager.test_all_connections()
+            
+            # Ask if user wants to use default for all operations
+            use_default = model_manager.use_default_for_all()
+            
+            # Step 2: Select input Excel file
+            print_section("Select Input Excel File", "2/4")
+            print("📁 Reading files from: input/")
+            print("   (Excel files with keywords in first column)")
+            print()
+            
+            selected_files = self.file_selector.select_files_interactive(custom_dir="input")
+            
+            if not selected_files:
+                print("\n❌ No files selected. Exiting...")
+                return
+            
+            excel_file = selected_files[0]  # Process first file
+            print(f"\n✅ Selected: {excel_file.name}")
+            
+            # Step 3: Select AI model
+            print_section("Select AI Model for Synonym Finding", "3/4")
+            
+            if use_default:
+                synonym_model = model_manager.get_default_model()
+                print(f"✅ Using default model: {synonym_model.name}")
+            else:
+                synonym_model = model_manager.select_model_interactive(
+                    purpose="Synonym Finding"
+                )
+            
+            if not synonym_model:
+                print("\n❌ No model selected. Exiting...")
+                return
+            
+            # Step 4: Process keywords
+            print_section("Finding Semantic Equivalents", "4/4")
+            
+            synonym_finder = SynonymFinder(self.config)
+            
+            output_file = synonym_finder.process_excel_file(
+                excel_path=str(excel_file),
+                ai_model=synonym_model,
+                output_dir="output/synonyms"
+            )
+            
+            # Final summary
+            print_section("🎉 SYNONYM FINDING COMPLETED!")
+            print(f"📁 Output file: {output_file}")
+            print(f"\n💡 Tip: Use these synonyms to:")
+            print(f"   - Optimize your content for different search variations")
+            print(f"   - Cover all possible ways users might search")
+            print(f"   - Improve SEO with comprehensive keyword coverage")
+            
+        except KeyboardInterrupt:
+            print("\n\n⚠️  Process interrupted by user")
+            logger.info("Synonym finding interrupted by user")
+            sys.exit(0)
+            
+        except Exception as e:
+            logger.error(f"Fatal error in synonym finding mode: {e}")
+            print(f"\n❌ Fatal error: {e}")
+            raise
 
 
 def select_mode_interactive() -> str:
@@ -964,12 +1045,15 @@ def select_mode_interactive() -> str:
     print("  [4] Internal Linking Only 🔗 NEW")
     print("      Add internal links to existing content")
     print("      Input: HTML/Word files with content")
-    print("      Output: Updated content with internal links")
-    print("      Features: Multi-model AI, Internal linking, Export to multiple formats\n")
+    print("      Output: Updated content with internal links\n")
+    print("  [5] Keyword Synonym Finder 🔍 NEW")
+    print("      Find all semantic equivalents for keywords")
+    print("      Input: Excel file with keywords (column 1)")
+    print("      Output: Excel with all variations (Finglish, keyboard typing, misspellings, etc.)\n")
     print("-"*70)
     
     while True:
-        choice = input("Your selection (1, 2, 3, or 4): ").strip()
+        choice = input("Your selection (1, 2, 3, 4, or 5): ").strip()
         
         if choice == '1':
             return 'content'
@@ -979,8 +1063,10 @@ def select_mode_interactive() -> str:
             return 'generation'
         elif choice == '4':
             return 'linking'
+        elif choice == '5':
+            return 'synonyms'
         else:
-            print("❌ Invalid choice. Please enter 1, 2, 3, or 4.")
+            print("❌ Invalid choice. Please enter 1, 2, 3, 4, or 5.")
 
 
 def main():
@@ -1001,8 +1087,8 @@ Examples:
     parser.add_argument(
         '--mode',
         type=str,
-        choices=['content', 'scraping', 'generation'],
-        help='Operational mode: content (optimization), scraping (SEO data collection), or generation (AI content generation)'
+        choices=['content', 'scraping', 'generation', 'linking', 'synonyms'],
+        help='Operational mode: content (optimization), scraping (SEO data collection), generation (AI content), linking (internal links), or synonyms (keyword variations)'
     )
     
     parser.add_argument(
@@ -1053,6 +1139,8 @@ Examples:
         optimizer.run_content_generation()
     elif mode == 'linking':
         optimizer.run_internal_linking_only()
+    elif mode == 'synonyms':
+        optimizer.run_synonym_finder()
 
 
 if __name__ == "__main__":

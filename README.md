@@ -1,4 +1,4 @@
-# SEO Content Analysis & Optimization Tool v2.3.3
+# SEO Content Analysis & Optimization Tool v2.4.0
 
 A powerful, interactive Python application optimized for **Persian/Farsi content** that helps you improve your website's SEO through:
 1. **Content Optimization**: Analyze Google Search Console data with Persian-aware AI
@@ -10,6 +10,19 @@ A powerful, interactive Python application optimized for **Persian/Farsi content
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Persian Optimized](https://img.shields.io/badge/Persian-Optimized-green.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+---
+
+## 🆕 What's New in v2.4.0
+
+### 🔍 New Mode 5: Keyword Synonym Finder
+- ✅ **Find All Variations**: Discover all possible ways users might search for your keywords
+- ✅ **8 Categories**: Persian synonyms, Finglish, keyboard typing, misspellings, English, abbreviations, related terms
+- ✅ **Excel Output**: Organized results with separate columns for each variation type
+- ✅ **SEO Optimization**: Cover all search variations to maximize visibility
+- ✅ **AI-Powered**: Uses advanced AI to find linguistic and semantic variations
+
+**Example**: "گوشی" → موبایل, تلفن, gooshi, gushi, ',ad, mobile, phone, smartphone
 
 ---
 
@@ -437,6 +450,46 @@ Scraping pages: 100%|███████████| 10/10
 - **Format Preservation**: Maintains original HTML/Word structure
 
 **Output**: Updated content files with internal links added, preserving original structure.
+
+---
+
+### Mode 5: Keyword Synonym Finder 🔍 NEW
+
+**Purpose**: Find all possible semantic equivalents and variations for your keywords to maximize SEO coverage.
+
+**Workflow**:
+1. Run: `python3 main.py --mode synonyms`
+2. System tests all configured AI models
+3. Choose to use default model or select manually
+4. **Select Excel file from `input/` folder** (keywords in column 1)
+5. Select AI model for synonym finding
+6. System processes each keyword and finds all variations
+7. Generate Excel with 9 columns (original + 8 variation types)
+
+**8 Categories of Variations**:
+1. **مترادف‌های فارسی**: Persian synonyms (موبایل، تلفن، تلفن همراه)
+2. **فینگلیش استاندارد**: Finglish variations (gooshi, gushi, gooshy)
+3. **کیبورد انگلیسی**: English keyboard typing (گوشی → ',ad)
+4. **اختصارات عامیانه**: Colloquial abbreviations
+5. **غلط‌های املایی**: Common misspellings (گوشی → گوشئ، گوشیی)
+6. **معادل انگلیسی**: English equivalents (mobile, phone, smartphone)
+7. **مخفف‌ها**: Abbreviations (mob, ph)
+8. **واژگان مرتبط**: Related terms (اسمارت فون، تلفن هوشمند)
+
+**Example Output**:
+
+| کلمه اصلی | مترادف‌های فارسی | فینگلیش | کیبورد انگلیسی | اختصارات | غلط‌املایی | معادل انگلیسی | مخفف | واژگان مرتبط |
+|----------|-----------------|---------|----------------|---------|-----------|--------------|------|--------------|
+| گوشی | موبایل، تلفن | gooshi, gushi | ',ad, y,ad | موبایل | گوشئ، گوشیی | mobile, phone | mob | اسمارت فون |
+| بذر | تخم، دانه | bazr, takhm | f`v, jolh | بذر | بذرر | seed | - | نهال، کاشت |
+
+**Use Cases**:
+- **SEO Optimization**: Cover all possible search variations
+- **Content Planning**: Know how users search for your keywords
+- **Keyword Research**: Discover missed search opportunities
+- **Localization**: Handle Persian, English, and mixed variations
+
+**Output**: Excel file with comprehensive keyword variations for SEO optimization.
 
 **Generated Content Includes**:
 - SEO-optimized title (max 60 characters)
