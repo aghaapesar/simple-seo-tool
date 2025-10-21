@@ -582,5 +582,174 @@ Track these metrics monthly:
 
 ---
 
+## 🔍 Example 10: Keyword Synonym Finder - Comprehensive SEO Coverage
+
+### Scenario
+You have a list of primary keywords for your products/content, but you want to discover ALL possible ways users might search for them - including Persian, Finglish, keyboard mistakes, and misspellings.
+
+### Workflow
+
+1. **Prepare Input Excel**
+   - Create an Excel file with keywords in column 1
+   - First row is header ("کلمه اصلی")
+   - One keyword per row
+   
+   Example: `input/keywords.xlsx`
+   ```
+   | کلمه اصلی |
+   |----------|
+   | گوشی     |
+   | بذر      |
+   | لپ‌تاپ    |
+   | کیف      |
+   ```
+
+2. **Run Mode 5**
+   ```bash
+   python3 main.py --mode synonyms
+   ```
+
+3. **Interactive Steps**
+   - System tests all AI models
+   - Choose default model or select manually
+   - Select your Excel file from `input/` folder
+   - AI processes each keyword
+
+4. **Review Output**
+   - Excel file created in `output/synonyms/`
+   - 9 columns with comprehensive variations
+
+### Example Output
+
+For keyword "گوشی" (phone):
+
+| کلمه اصلی | مترادف‌های فارسی | فینگلیش | کیبورد انگلیسی | اختصارات | غلط‌املایی | معادل انگلیسی | مخفف | واژگان مرتبط |
+|----------|-----------------|---------|----------------|---------|-----------|--------------|------|--------------|
+| گوشی | موبایل، تلفن همراه، تلفن | gooshi, gushi, gooshy, gushy | ',ad, y,ad | موبایل | گوشئ، گوشیی، کوشی | mobile, phone, smartphone, cellphone | mob | اسمارت فون، تلفن هوشمند، موبایل فون |
+
+For keyword "بذر" (seed):
+
+| کلمه اصلی | مترادف‌های فارسی | فینگلیش | کیبورد انگلیسی | اختصارات | غلط‌املایی | معادل انگلیسی | مخفف | واژگان مرتبط |
+|----------|-----------------|---------|----------------|---------|-----------|--------------|------|--------------|
+| بذر | تخم، دانه | bazr, takhm, dane | f`v, jolh | بذر | بذرر، بذور | seed | - | نهال، کاشت، کشت، گیاه |
+
+### Use Cases
+
+#### 1. SEO Content Optimization
+Use all variations in your content naturally:
+- **Headers**: Use Persian synonyms
+- **Body text**: Mix Persian and Finglish
+- **Meta tags**: Include English equivalents
+- **Alt text**: Use related terms
+
+#### 2. Keyword Research
+Identify which variations have search volume:
+- Check Google Trends for each variation
+- Use in Google Ads Keyword Planner
+- Discover untapped search opportunities
+
+#### 3. Search Console Analysis
+Cross-reference with actual user queries:
+- Compare variations with GSC data
+- Find patterns in how users search
+- Optimize for highest-volume variations
+
+#### 4. Internal Search Optimization
+Improve site search:
+- Add all variations to search dictionary
+- Handle misspellings automatically
+- Support Finglish searches
+
+#### 5. Content Localization
+Create targeted content for different audiences:
+- Persian speakers: Use formal Persian
+- Younger audience: Include Finglish
+- International: Use English equivalents
+- Cover all bases: Use all variations
+
+### Real-World Example: E-commerce Store
+
+**Product**: Samsung Phone
+
+**Step 1**: Generate synonyms for "گوشی سامسونگ"
+```
+کلمه اصلی: گوشی سامسونگ
+```
+
+**Step 2**: AI finds 50+ variations including:
+- موبایل سامسونگ
+- تلفن همراه سامسونگ
+- gooshi samsung
+- mobile samsung
+- y,ad shls,kn (keyboard mistake)
+- گوشی سامسونگ (misspelling: گوشئ سامسونگ)
+
+**Step 3**: Use in content
+```html
+<h1>گوشی سامسونگ - خرید موبایل Samsung</h1>
+<meta name="keywords" content="گوشی سامسونگ, موبایل samsung, gooshi samsung">
+<p>تلفن همراه سامسونگ (Samsung Mobile) با بهترین قیمت...</p>
+```
+
+**Step 4**: Track performance
+- Monitor which variations drive traffic
+- Optimize for top-performing variations
+- Create dedicated pages for high-volume variations
+
+### Benefits
+
+✅ **Complete Coverage**: Never miss a search variation
+✅ **User Intent**: Understand how users search
+✅ **Competitive Advantage**: Rank for variations competitors miss
+✅ **Long-tail SEO**: Capture misspellings and variations
+✅ **Localization**: Handle multilingual audiences
+✅ **Content Ideas**: Generate content for each variation
+
+### Tips
+
+1. **Process in Batches**: For large keyword lists, split into batches of 50-100
+2. **Validate Results**: Check search volume for AI-generated variations
+3. **Natural Usage**: Use variations naturally, not keyword stuffing
+4. **Update Regularly**: Re-run quarterly to find new variations
+5. **Combine Modes**: Use with Mode 3 to generate content with variations
+
+### Common Scenarios
+
+#### Scenario A: Product Keywords
+```
+Input: Product names
+Output: All possible ways customers search
+Action: Optimize product titles and descriptions
+```
+
+#### Scenario B: Blog Topics
+```
+Input: Main blog topics
+Output: Related keywords and variations
+Action: Create content clusters around variations
+```
+
+#### Scenario C: Brand Names
+```
+Input: Your brand/product names
+Output: Common misspellings and variations
+Action: Create redirects and capture misspelled searches
+```
+
+### Success Story
+
+**Before**: Ranking for "گوشی" only → 1,000 impressions/month
+
+**After**: Optimized for 30+ variations
+- گوشی → 1,000 impressions
+- موبایل → 800 impressions
+- gooshi → 300 impressions
+- mobile → 500 impressions
+- Misspellings → 200 impressions
+
+**Total**: 2,800 impressions/month (+180% increase!)
+
+---
+
 **Each use case may require different configuration. Experiment and iterate!**
 
