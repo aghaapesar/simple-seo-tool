@@ -1,0 +1,132 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Configuration (contains sensitive API keys)
+config.yaml
+.env
+.env.local
+
+# Input files (user's Excel data)
+input/
+!input/.gitkeep
+
+# Sitemaps cache
+sitemaps/
+!sitemaps/.gitkeep
+
+# Output files
+output/
+!output/.gitkeep
+!output/content_generated/.gitkeep
+!output/documents/.gitkeep
+
+# Excel files (anywhere in project)
+*.xlsx
+*.xls
+*.xlsm
+!example_*.xlsx
+!sample_*.xlsx
+
+# CSV files (temporary data)
+*.csv
+!example_*.csv
+
+# Logs
+*.log
+logs/
+!logs/.gitkeep
+
+# Knowledge Base (project-specific data)
+knowledge_base/
+!knowledge_base/.gitkeep
+!knowledge_base/README.md
+
+# Backup files
+*_backup.*
+
+# Old/temporary files
+README_OLD.md
+*_OLD.*
+*_NEW.*
+*.tmp
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Compressed files
+*.zip
+*.tar.gz
+*.rar
+
+# OS specific
+Thumbs.db
+Desktop.ini
+
+# Python version managers
+.python-version
+.pyenv
+
+# Cache files
+.cache/
+*.cache
+
+# Temporary downloads
+downloads/
+temp/
+tmp/
+
+# Generated content directories
+output/content_generated/
+output/documents/
+
+# Keep .gitkeep files but ignore their contents
+!.gitkeep
+

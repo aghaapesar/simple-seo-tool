@@ -1,0 +1,165 @@
+# SEO Content Analysis & Optimization Tool - Sample Configuration
+# Copy this file to config.yaml and update with your actual API keys
+
+# Legacy AI configuration (for backward compatibility)
+ai:
+  # provider: one of [openai, azure, anthropic, openai_compatible]
+  provider: openai_compatible
+
+  # Common
+  model: openai/gpt-4o-mini
+  temperature: 0.0
+  response_json: true
+  timeout_seconds: 60
+  max_retries: 3
+  retry_base_delay: 1.5
+  qps: 1.0
+
+  # OpenAI
+  openai_api_key: "YOUR_OPENAI_API_KEY"
+  openai_base_url: "https://api.openai.com/v1"
+
+  # Azure OpenAI
+  azure_endpoint: "https://YOUR-RESOURCE-NAME.openai.azure.com"
+  azure_api_key: "env:AZURE_OPENAI_API_KEY"
+  azure_api_version: "2024-02-15-preview"
+  azure_deployment: "gpt-4o-mini"
+
+  # Anthropic
+  anthropic_api_key: "env:ANTHROPIC_API_KEY"
+  anthropic_api_version: "2023-06-01"
+
+  # OpenAI-compatible / local
+  compatible_base_url: "https://YOUR_COMPATIBLE_API_URL/v1"
+  compatible_api_key: "YOUR_COMPATIBLE_API_KEY"
+
+# Multi-Model AI Configuration (v2.3+)
+# You can configure multiple AI models and select which one to use for each operation
+ai_models:
+  # Set the default model to use for all operations (unless user chooses otherwise)
+  default: "liara_gpt4o_mini"
+  
+  # Model configurations
+  # Each model needs: provider, api_key, model name, and provider-specific settings
+  
+  # === Liara AI Models (via OpenAI Compatible) ===
+  # Access latest AI models through Liara's unified API
+  
+  liara_gpt4o_mini:
+    provider: "openai_compatible"
+    api_key: "YOUR_LIARA_API_KEY"
+    base_url: "https://ai.liara.ir/api/YOUR_PROJECT_ID/v1"
+    model: "openai/gpt-4o-mini"
+  
+  liara_gpt5:
+    provider: "openai_compatible"
+    api_key: "YOUR_LIARA_API_KEY"
+    base_url: "https://ai.liara.ir/api/YOUR_PROJECT_ID/v1"
+    model: "openai/gpt-5"
+  
+  liara_claude_sonnet_45:
+    provider: "openai_compatible"
+    api_key: "YOUR_LIARA_API_KEY"
+    base_url: "https://ai.liara.ir/api/YOUR_PROJECT_ID/v1"
+    model: "anthropic/claude-sonnet-4.5"
+  
+  liara_claude_sonnet_37_thinking:
+    provider: "openai_compatible"
+    api_key: "YOUR_LIARA_API_KEY"
+    base_url: "https://ai.liara.ir/api/YOUR_PROJECT_ID/v1"
+    model: "anthropic/claude-3.7-sonnet:thinking"
+  
+  liara_grok4:
+    provider: "openai_compatible"
+    api_key: "YOUR_LIARA_API_KEY"
+    base_url: "https://ai.liara.ir/api/YOUR_PROJECT_ID/v1"
+    model: "x-ai/grok-4"
+  
+  liara_gemini_25_flash:
+    provider: "openai_compatible"
+    api_key: "YOUR_LIARA_API_KEY"
+    base_url: "https://ai.liara.ir/api/YOUR_PROJECT_ID/v1"
+    model: "google/gemini-2.5-flash"
+    
+  # === Direct Provider Models (require separate API keys) ===
+    
+  openai_gpt4:
+    provider: "openai"
+    api_key: "env:OPENAI_API_KEY"  # Use env:VAR_NAME to read from environment variable
+    base_url: "https://api.openai.com/v1"
+    model: "gpt-4"
+    
+  openai_gpt4o:
+    provider: "openai"
+    api_key: "env:OPENAI_API_KEY"
+    base_url: "https://api.openai.com/v1"
+    model: "gpt-4o"
+  
+  claude_opus:
+    provider: "anthropic"
+    api_key: "env:ANTHROPIC_API_KEY"
+    model: "claude-3-opus-20240229"
+    
+  claude_sonnet:
+    provider: "anthropic"
+    api_key: "env:ANTHROPIC_API_KEY"
+    model: "claude-3-5-sonnet-20241022"
+    
+  claude_haiku:
+    provider: "anthropic"
+    api_key: "env:ANTHROPIC_API_KEY"
+    model: "claude-3-haiku-20240307"
+  
+  gemini_pro:
+    provider: "gemini"
+    api_key: "env:GOOGLE_API_KEY"
+    model: "gemini-pro"
+    
+  gemini_pro_vision:
+    provider: "gemini"
+    api_key: "env:GOOGLE_API_KEY"
+    model: "gemini-pro-vision"
+  
+  grok_llama3_70b:
+    provider: "grok"
+    api_key: "env:GROK_API_KEY"
+    model: "llama3-70b-8192"
+    
+  grok_llama3_8b:
+    provider: "grok"
+    api_key: "env:GROK_API_KEY"
+    model: "llama3-8b-8192"
+    
+  grok_mixtral:
+    provider: "grok"
+    api_key: "env:GROK_API_KEY"
+    model: "mixtral-8x7b-32768"
+
+# Application settings
+app:
+  # URL to your website's XML sitemap
+  sitemap_url: "https://example.com/sitemap.xml"
+  
+  # Minimum position to consider for opportunities (queries beyond this position)
+  min_position: 10
+  
+  # Semantic similarity threshold for clustering (0.0-1.0)
+  clustering_threshold: 0.7
+  
+  # Maximum number of H2/H3 headings per article suggestion
+  max_headings_per_article: 8
+  
+  # Path to Google Search Console Excel export file
+  input_excel_path: "search_console_data.xlsx"
+  
+  # Output directory for generated Excel files
+  output_directory: "output"
+
+# Environment Variables Setup
+# Set these environment variables instead of putting API keys directly in config:
+#
+# export OPENAI_API_KEY="sk-your-openai-key"
+# export ANTHROPIC_API_KEY="sk-ant-your-claude-key"
+# export GOOGLE_API_KEY="your-google-api-key"
+# export GROK_API_KEY="gsk_your-grok-key"
+# export AZURE_OPENAI_API_KEY="your-azure-key"
