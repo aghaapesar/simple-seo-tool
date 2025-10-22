@@ -1,0 +1,52 @@
+# Git attributes for SEO Content Optimizer
+
+# Text files
+*.md text
+*.txt text
+*.py text
+*.yaml text
+*.yml text
+*.json text
+*.log text
+
+# Ensure proper line endings
+*.py text eol=lf
+*.md text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.txt text eol=lf
+
+# Binary files
+*.xlsx binary
+*.xls binary
+*.docx binary
+*.pdf binary
+*.zip binary
+*.tar.gz binary
+
+# Executable files
+*.sh text eol=lf
+main.py text eol=lf
+test_connection.py text eol=lf
+
+# Ignore whitespace for certain files
+*.md -diff
+*.txt -diff
+
+# Language detection
+*.py linguist-language=Python
+*.md linguist-language=Markdown
+*.yaml linguist-language=YAML
+*.yml linguist-language=YAML
+*.json linguist-language=JSON
+
+# Documentation files
+README.md linguist-documentation
+CHANGELOG.md linguist-documentation
+FEATURES.md linguist-documentation
+EXAMPLES.md linguist-documentation
+QUICKSTART.md linguist-documentation
+PROJECT_STRUCTURE.md linguist-documentation
+AI_MODELS.md linguist-documentation
+WORD_EXPORT_GUIDE.md linguist-documentation
